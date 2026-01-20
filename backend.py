@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, Form, Response, Cookie
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from requests_oauthlib import OAuth2Session
+import time
 import os, uuid
 
 import db_tools.db_reader as dbr
@@ -12,10 +13,6 @@ from models import Base, User, Book
 
 Base.metadata.create_all(bind=engine)
 
-ALLOWED_DOMAIN = "levi.edu.it"
-def is_allowed_email(email: str) -> bool:
-    return email.lower().endswith(f"@{ALLOWED_DOMAIN}")
-
 # ---------- OAuth2 config ----------
 CLIENT_ID = "782649023-kbhsqahf4nao93cqh5d66bajd6v6jqaa.apps.googleusercontent.com"
 CLIENT_SECRET = "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"
@@ -24,6 +21,7 @@ AUTHORIZATION_BASE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 SCOPE = ["https://www.googleapis.com/auth/userinfo.email", "openid"]
 
+SESSION_TTL = 3600
 oauth2_sessions = {}  # temp state storage
 sessions = {}  # session_id -> email
 
@@ -35,10 +33,29 @@ from fastapi.staticfiles import StaticFiles
 # Mount the static folder
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
+ALLOWED_DOMAIN = "levi.edu.it"
+def is_allowed_email(email: str) -> bool:
+    return email.lower().endswith(f"@{ALLOWED_DOMAIN}")
+
+def get_session_email(session_id: str):
+    if not session_id:
+        return None
+
+    session = get_session_email(session_id)
+
+    if not session:
+        return None
+
+    # Expired?
+    if time.time() - session["created"] > SESSION_TTL:
+        sessions.pop(session_id, None)
+        return None
+
+    return session["email"]
 
 @app.get("/", response_class=HTMLResponse)
 def homepage(request: Request, session_id: str = Cookie(None)):
-    email = sessions.get(session_id)
+    email = get_session_email(session_id)
 
     if not email:
         # No valid session → redirect to login page
@@ -94,14 +111,25 @@ def callback(response: Response, request: Request):
         # Add user to DB
         db = SessionLocal()
         dbi.add_entry(db, email)
-        dbr.print_db(db, "\n=== WITH new entry ===")
+        dbr.print_db(db, True,"\n=== WITH new entry ===")
         db.close()
 
         # Create session
         session_id = str(uuid.uuid4())
-        sessions[session_id] = email
+        sessions[session_id] = {
+            "email": email,
+            "created": time.time()
+        }
         response = RedirectResponse(url="/")
-        response.set_cookie(key="session_id", value=session_id, httponly=True)
+        response.set_cookie(
+            key="session_id",
+            value=session_id,
+            max_age=SESSION_TTL,
+            httponly=True,
+            secure=True,  # enable when HTTPS
+            samesite="strict"
+        )
+
         return response
     else:
         return RedirectResponse(url="/loginrejected")
@@ -125,7 +153,8 @@ def logout(response: Response, session_id: str = Cookie(None)):
 
 @app.get("/borrow")
 def borrow_book(request: Request, book_id: int, session_id: str = Cookie(None)):
-    email = sessions.get(session_id)
+    email = get_session_email(session_id)
+
     if not email:
         return RedirectResponse(url="/login")
 
