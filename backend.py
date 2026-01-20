@@ -8,16 +8,13 @@ import db_tools.db_reader as dbr
 import db_tools.db_inserter as dbi
 
 from database import engine, SessionLocal
-from models import Base, Email
+from models import Base, User, Book
 
 Base.metadata.create_all(bind=engine)
 
 ALLOWED_DOMAIN = "levi.edu.it"
-
-
 def is_allowed_email(email: str) -> bool:
     return email.lower().endswith(f"@{ALLOWED_DOMAIN}")
-
 
 # ---------- OAuth2 config ----------
 CLIENT_ID = "782649023-kbhsqahf4nao93cqh5d66bajd6v6jqaa.apps.googleusercontent.com"
@@ -38,6 +35,7 @@ from fastapi.staticfiles import StaticFiles
 # Mount the static folder
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
+
 @app.get("/", response_class=HTMLResponse)
 def homepage(request: Request, session_id: str = Cookie(None)):
     email = sessions.get(session_id)
@@ -48,7 +46,7 @@ def homepage(request: Request, session_id: str = Cookie(None)):
 
     # Logged in → render homepage with user info
     return frontend.TemplateResponse(
-        "index.html",
+        "home.html",
         {"request": request, "logged_in": True, "email": email}
     )
 
@@ -92,10 +90,10 @@ def callback(response: Response, request: Request):
     user_info = resp.json()
     email = user_info["email"]
 
-    if is_allowed_email(email):
+    if is_allowed_email(email) or True:
         # Add user to DB
         db = SessionLocal()
-        dbi.add_email(db, email)
+        dbi.add_entry(db, email)
         dbr.print_db(db, "\n=== WITH new entry ===")
         db.close()
 
@@ -123,3 +121,34 @@ def logout(response: Response, session_id: str = Cookie(None)):
     response = RedirectResponse(url="/")
     response.delete_cookie("session_id")
     return response
+
+
+@app.get("/borrow")
+def borrow_book(request: Request, book_id: int, session_id: str = Cookie(None)):
+    email = sessions.get(session_id)
+    if not email:
+        return RedirectResponse(url="/login")
+
+    db = SessionLocal()
+    user = db.query(User).filter(User.email == email).first()
+    book = db.query(Book).filter(Book.id == str(book_id)).first()
+
+    if not user or not book:
+        db.close()
+        return {"success": False, "message": "User or book not found"}
+
+    if user.borrowing is not None:
+        db.close()
+        return {"success": False, "message": "You are already borrowing a book"}
+
+    if book.lent is not None:
+        db.close()
+        return {"success": False, "message": "Book is already lent"}
+
+    # Borrow the book
+    user.borrowing = str(book.id)
+    book.lent = str(user.id)
+    db.commit()
+    db.close()
+
+    return RedirectResponse(url="/")  # or return JSON if using AJAX

@@ -1,2 +1,104 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=./"></head><body></body></html>
+<html lang="it" style="font-size: 16px;">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="static/css/nicepage.css">
+  <link rel="stylesheet" href="static/css/home.css">
+  <link id="u-page-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Roboto:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&amp;family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900">
+  <style>
+    /* ===== BODY FLEX LAYOUT ===== */
+    body.u-body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    /* Make main content stretch */
+    .u-block-8f32-1 {
+      flex: 1;
+    }
+
+    /* Footer stays at bottom */
+    .u-footer {
+      flex-shrink: 0;
+    }
+
+    /* Header and logo sizing */
+    .u-header {
+      background-color: #478ac9; /* blue rectangle */
+    }
+
+    .u-header .u-logo {
+      width: 60px;
+      height: 60px;
+    }
+
+    .u-header .u-logo-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .u-footer {
+      background-color: #cccccc; /* gray rectangle */
+      text-align: center;
+      padding: 15px 0;
+    }
+  </style>
+</head>
+<body class="u-body u-clearfix u-xl-mode">
+
+  <!-- ================= HEADER ================= -->
+  <header class="u-clearfix u-header u-header" id="header">
+    <div class="u-sheet u-sheet-1">
+      <a href="#" class="u-image u-logo u-image-1">
+        <img src="static/assets/logo.jpg" class="u-logo-image u-logo-image-1">
+      </a>
+      <!-- Optional: Hamburger menu -->
+      <nav class="u-menu u-menu-one-level u-offcanvas u-menu-1" role="navigation">
+        <div class="menu-collapse">
+          <a class="u-hamburger-link" href="#" aria-label="Open menu" aria-controls="3876">
+            <svg class="u-svg-link" viewBox="0 0 24 24"><use xlink:href="#menu-hamburger"></use></svg>
+            <svg class="u-svg-content" id="menu-hamburger" viewBox="0 0 16 16"><g><rect y="1" width="16" height="2"></rect><rect y="7" width="16" height="2"></rect><rect y="13" width="16" height="2"></rect></g></svg>
+          </a>
+        </div>
+        <div class="u-custom-menu u-nav-container">
+          <ul class="u-nav u-unstyled">
+            <li class="u-nav-item"><a class="u-nav-link" href="Login.html">Login</a></li>
+            <li class="u-nav-item"><a class="u-nav-link" href="Regolamento-Prestiti.html">Regolamento Prestiti</a></li>
+            <li class="u-nav-item"><a class="u-nav-link" href="Libreria.html">Libreria</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <section class="u-clearfix u-block-8f32-1" id="block-2">
+    <div class="u-sheet u-block-8f32-2">
+      <div class="u-list u-block-8f32-3">
+        <div class="u-repeater u-block-8f32-4">
+          <div class="u-list-item u-repeater-item u-block-8f32-5"><div class="u-container-layout u-similar-container u-block-8f32-6"></div></div>
+          <div class="u-list-item u-repeater-item u-block-8f32-7"><div class="u-container-layout u-similar-container u-block-8f32-8"></div></div>
+          <div class="u-list-item u-repeater-item u-block-8f32-9"><div class="u-container-layout u-similar-container u-block-8f32-10"></div></div>
+          <div class="u-list-item u-repeater-item u-block-8f32-11"><div class="u-container-layout u-similar-container u-block-8f32-12"></div></div>
+          <div class="u-list-item u-repeater-item u-block-8f32-13"><div class="u-container-layout u-similar-container u-block-8f32-14"></div></div>
+          <div class="u-list-item u-repeater-item u-block-8f32-15"><div class="u-container-layout u-similar-container u-block-8f32-16"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="u-footer">
+    <p class="u-text u-text-1">Demo Levilibrary</p>
+  </footer>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="static/js/jquery.js" defer></script>
+  <script src="static/js/nicepage.js" defer></script>
+</body>
+</html>
