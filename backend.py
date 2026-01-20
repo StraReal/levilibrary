@@ -2,7 +2,9 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from db_tools import db_inserter as dbi, db_reader as dbr
+import db_tools.db_reader as dbr
+import db_tools.db_inserter as dbi
+
 from database import engine, SessionLocal
 from models import Base, Email
 
