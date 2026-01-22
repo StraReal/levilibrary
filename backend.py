@@ -14,12 +14,38 @@ from models import Base, User, Book
 Base.metadata.create_all(bind=engine)
 
 # ---------- OAuth2 config ----------
-CLIENT_ID = "782649023-kbhsqahf4nao93cqh5d66bajd6v6jqaa.apps.googleusercontent.com"
-CLIENT_SECRET = "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"
-REDIRECT_URI = "http://localhost:8000/auth/callback"
-AUTHORIZATION_BASE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
-TOKEN_URL = "https://oauth2.googleapis.com/token"
-SCOPE = ["https://www.googleapis.com/auth/userinfo.email", "openid"]
+import json
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+SECRETS_PATH = BASE_DIR / "secrets.json"
+
+TEMPLATE = {
+    "CLIENT_ID": "your-google-client-id.apps.googleusercontent.com",
+    "CLIENT_SECRET": "your-google-client-secret",
+    "REDIRECT_URI": "http://localhost:8000/auth/callback"
+}
+
+if not SECRETS_PATH.exists():
+    # Create a template to guide the user
+    with open(SECRETS_PATH, "w", encoding="utf-8") as f:
+        json.dump(TEMPLATE, f, indent=4)
+
+    raise FileNotFoundError(
+        f"\nMissing secrets.json\n"
+        f"A template file has been created at:\n"
+        f"  {SECRETS_PATH}\n\n"
+        f"Fill it with your real credentials and restart the application.\n"
+        f"Do NOT commit this file to Git."
+    )
+
+with open(SECRETS_PATH, "r", encoding="utf-8") as f:
+    secrets = json.load(f)
+
+CLIENT_ID = secrets["CLIENT_ID"]
+CLIENT_SECRET = secrets["CLIENT_SECRET"]
+REDIRECT_URI = secrets["REDIRECT_URI"]
+
 
 SESSION_TTL = 3600
 oauth2_sessions = {}  # temp state storage
@@ -41,7 +67,7 @@ def get_session_email(session_id: str):
     if not session_id:
         return None
 
-    session = get_session_email(session_id)
+    session = sessions.get(session_id)
 
     if not session:
         return None
@@ -59,6 +85,7 @@ def homepage(request: Request, session_id: str = Cookie(None)):
 
     if not email:
         # No valid session → redirect to login page
+        print('Redirecting to /login,', session_id)
         return RedirectResponse(url="/login")
 
     # Logged in → render homepage with user info
@@ -66,7 +93,6 @@ def homepage(request: Request, session_id: str = Cookie(None)):
         "home.html",
         {"request": request, "logged_in": True, "email": email}
     )
-
 
 @app.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
@@ -99,6 +125,7 @@ def callback(response: Response, request: Request):
     state = request.query_params.get("state")
     google = oauth2_sessions.pop(state)
 
+    print(state, google)
     # Fetch token
     token = google.fetch_token(TOKEN_URL, client_secret=CLIENT_SECRET, code=code)
 
@@ -126,8 +153,8 @@ def callback(response: Response, request: Request):
             value=session_id,
             max_age=SESSION_TTL,
             httponly=True,
-            secure=True,  # enable when HTTPS
-            samesite="strict"
+            secure=False,  # enable when HTTPS
+            samesite="lax"
         )
 
         return response
