@@ -1,2 +1,5 @@
 /.venv/
 /.idea/
+/db_tools/app.db
+/app.db
+/secrets.json
