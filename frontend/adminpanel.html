@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Iceland&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/adminpanel.css">
+</head>
+<body>
+
+  <header>
+    <a href="/">
+        <img src="static/assets/logo.jpg" alt="Logo" class="logo">
+    </a>
+  </header>
+
+  <main>
+    <div class="add-book-container">
+  <button class="add-btn" id="openAddModal">Aggiungi Libro</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="addBookModal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Aggiungi un nuovo libro</h2>
+<form id="addBookForm">
+  <label for="titleInput">Titolo</label>
+  <input type="text" id="titleInput" name="title" placeholder="Titolo" required>
+
+  <label for="authorInput">Autore</label>
+  <input type="text" id="authorInput" name="author" placeholder="Autore" required>
+
+<div class="file-drop-container">
+  <div class="file-drop-zone" id="coverDropZone">
+    Trascina qui la copertina
+    <label for="coverInput" class="browse-btn">Sfoglia</label>
+    <input type="file" id="coverInput" name="cover" accept="image/*" hidden>
+  </div>
+  <div class="cover-preview" id="coverPreview">
+    <img src="static/assets/placeholder_cover.png" alt="Anteprima copertina">
+  </div>
+</div>
+
+  <button type="submit">Aggiungi</button>
+</form>
+    </div>
+  </div>
+  </main>
+
+  <footer>
+    <p>Levilibrary Demo</p>
+  </footer>
+
+<script src="static/js/adminpanel.js" defer></script>
+</body>
+</html>

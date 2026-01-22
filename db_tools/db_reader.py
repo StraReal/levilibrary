@@ -30,7 +30,7 @@ def print_db(db, user_table: bool = True, message: str = ''):
     else:
         table = Book
         empty_msg = "No books in the database."
-        header = "id | title | lent"
+        header = "id | title | author | cover | lent"
 
     entries = db.query(table).all()
     if not entries:
@@ -42,7 +42,7 @@ def print_db(db, user_table: bool = True, message: str = ''):
         if user_table:
             print(f"{e.id} | {e.email} | {e.borrowing}")
         else:
-            print(f"{e.id} | {e.title} | {e.lent}")
+            print(f"{e.id} | {e.title} | {e.author} | {e.cover} |{e.lent}")
 
 def main():
     db = SessionLocal()

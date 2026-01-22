@@ -1,27 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-    <title>Errore</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh; /* Full viewport height */
-            margin: 0;
-            background-color: #f9f9f9;
-            font-family: Arial, sans-serif;
-        }
-        .error-message {
-            color: red;
-            font-size: 24px;
-            text-align: center;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Failed</title>
+  <link href="https://fonts.googleapis.com/css2?family=Iceland&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/loginrejected.css">
 </head>
 <body>
-    <div class="error-message">
-        Qualcosa è andato storto o la email è invalida.
+
+  <header>
+    <a href="/">
+        <img src="static/assets/logo.jpg" alt="Logo" class="logo">
+    </a>
+  </header>
+
+  <main>
+    <div class="login-container">
+      <h1>Qualcosa è andato storto</h1>
+      <a href="/login" class="google-btn">Torna al Login</a>
     </div>
+  </main>
+
+  <footer>
+    <p>Levilibrary Demo</p>
+  </footer>
+
 </body>
 </html>

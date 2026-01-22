@@ -12,15 +12,7 @@ from db_tools.db_reader import print_db as read_db
 
 DATABASE_URL = "sqlite:///./app.db"
 
-def add_entry(db, entry, user_table=True):
-    """
-    Add an entry to the database.
-    If user_table=True, adds to Users table.
-    Otherwise, adds to Book table.
-    Optionally, you can specify borrowing_id:
-      - If adding a user, borrowing_id is the book they borrow
-      - If adding a book, borrowing_id is the user who borrowed it
-    """
+def add_entry(db, entry, user_table=True, author=None, cover=None):
     if user_table:
         table = User
         table_name = "User"
@@ -38,11 +30,12 @@ def add_entry(db, entry, user_table=True):
     if user_table:
         new_entry = User(email=entry, borrowing=None)
     else:
-        new_entry = Book(title=entry, lent=None)
+        new_entry = Book(title=entry, author=author, cover=cover, lent=None)
 
     db.add(new_entry)
     db.commit()
     print(f"\nEntry added successfully to {table_name}: {entry}")
+
 
 def main():
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
@@ -60,7 +53,10 @@ def main():
 
     read_db(db, user_db,"\n=== BEFORE adding ===")
     entry = input("Enter item: ")
-    add_entry(db, entry, user_table=user_db)
+    author = None
+    if not user_db:
+        author = input("Enter author: ")
+    add_entry(db, entry, user_table=user_db, author=author, cover=None)
     read_db(db, user_db,"\n=== AFTER adding ===")
     db.close()
 

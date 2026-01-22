@@ -15,4 +15,6 @@ class Book(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
+    author = Column(String, nullable=False)
+    cover = Column(String, nullable=False)
     lent = Column(Integer, nullable=True)  # ID of the user who borrowed this book, or None
