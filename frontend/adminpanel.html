@@ -10,16 +10,25 @@
 </head>
 <body>
 
-  <header>
-    <a href="/">
-        <img src="static/assets/logo.jpg" alt="Logo" class="logo">
-    </a>
-  </header>
+<header>
+  <a href="/" class="logo-link">
+    <img src="static/assets/logo.jpg" alt="Logo" class="logo">
+  </a>
+
+  <div class="header-rectangle">
+    <a href="/" class="rect-section">Homepage</a>
+    <a href="/adminpanel" class="rect-section">Presto..</a>
+    <a href="/adminpanel" class="rect-section">Presto..</a>
+  </div>
+</header>
 
   <main>
     <div class="add-book-container">
   <button class="add-btn" id="openAddModal">Aggiungi Libro</button>
   </div>
+<div class="add-book-container">
+  <button class="add-btn remove-hover">Rimuovi Libro</button>
+</div>
 
   <!-- Modal -->
   <div class="modal" id="addBookModal">

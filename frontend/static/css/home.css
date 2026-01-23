@@ -17,7 +17,48 @@ header {
   background-color: #16214C;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.header-rectangle {
+  width: 480px;
+  height: 60px;
+  background-color: #70ade0;
+  border-radius: 12px;
+  border: 2px solid #EFEFEF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+}
+
+.rect-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #EFEFEF;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  height: 100%;
   position: relative;
+  transition: background 0.2s ease;
+}
+
+.rect-section:hover {
+  background-color: rgba(0,0,20, 0.2);
+}
+
+.rect-section:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 10%;
+  height: 80%;
+  width: 2px;
+  background-color: #EFEFEF;
 }
 
 header .logo {
@@ -28,7 +69,9 @@ header .logo {
 main {
   flex: 1;
   background-color: #EFEFEF;
-  padding: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
 }
 
 footer {
@@ -56,6 +99,7 @@ footer p {
 }
 
 .book {
+  cursor: pointer;
   width: 400px;
   height: 600px;
   border: 2px solid #2c2c2c;
@@ -107,3 +151,198 @@ footer p {
   margin-top: 2px;
   color: white;
 }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+  position: relative;
+  color: white;
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  max-width: 800px;
+  width: 90%;
+  z-index: 1;
+}
+
+.modal-content img {
+  width: 200px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.modal-info-title {
+  position: absolute;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  height: 3.1rem;
+  top: 1.5rem;
+  right: 1rem;
+  left: calc(200px + 2.5rem);
+  z-index: 0;
+}
+
+.modal-info-description {
+  position: absolute;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  top: 5.6rem;
+  bottom: 4rem;
+  right: 1rem;
+  left: calc(200px + 2.5rem);
+  z-index: 0;
+}
+
+.modal-info h2 {
+position: relative;
+  margin: 0;
+  color: white;
+  z-index: 1;
+}
+
+.modal-info p {
+position: relative;
+  color: white;
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.borrow-btn {
+  position: absolute;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  background: #ff3400;
+  color: white;
+  cursor: pointer;
+  bottom: 1rem;
+  right: 1rem;
+  left: calc(200px + 2.5rem);
+}
+
+.search-bar {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  margin-top: 0.75rem;
+  display: flex-end;
+}
+
+.search-bar input {
+  width: 60%;
+  max-width: 420px;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.search-divider {
+  position: absolute;
+  margin-top: -0.75rem;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: #8e9096;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.page-arrow {
+  font-size: 1.4rem;
+  text-decoration: none;
+  color: black;
+  transition: 0.2s ease;
+  cursor: pointer;
+}
+
+.page-arrow:hover {
+  transform: scale(1.2);
+  color: #e63946;
+}
+
+.page-arrow.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.page-circle {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.page-circle-form {
+  display: inline-block;
+}
+
+.page-circle-input {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  text-align: center;
+  border: none;
+  outline: none;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.page-circle-input:hover,
+.page-circle-input:focus {
+  transform: scale(1.1);
+  background: #e63946;
+}
+
+.page-circle-input::-webkit-outer-spin-button,
+.page-circle-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.page-circle-input[type=number] {
+  -moz-appearance: textfield;
+}
+

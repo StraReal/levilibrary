@@ -12,12 +12,53 @@ body {
 }
 
 header {
-  height: 200px;
   width: 100%;
+  height: 200px;
   background-color: #16214C;
   display: flex;
   align-items: center;
-  padding-left: 20px;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.header-rectangle {
+  width: 480px;
+  height: 60px;
+  background-color: #70ade0;
+  border-radius: 12px;
+  border: 2px solid #EFEFEF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+}
+
+.rect-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #EFEFEF;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  height: 100%;
+  position: relative;
+  transition: background 0.2s ease;
+}
+
+.rect-section:hover {
+  background-color: rgba(0,0,20, 0.2);
+}
+
+.rect-section:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 10%;
+  height: 80%;
+  width: 2px;
+  background-color: #EFEFEF;
 }
 
 header .logo {
@@ -49,12 +90,12 @@ footer p {
 }
 
 .add-book-container {
-  margin-top: 200px;
   text-align: center;
+  margin-bottom: 20px;
 }
 
 .add-btn {
-  background-color: #00db4c;
+  background-color: #327248;
   color: #EFEFEF;
   font-weight: bold;
   font-family: 'Alexandria';
@@ -66,7 +107,6 @@ footer p {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 10%;
   cursor: pointer;
   transition: background 0.2s;
   box-sizing: border-box;
@@ -75,14 +115,20 @@ footer p {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: calc(0.9 * 27vw / 13);
-
-  position: absolute;
-  top: 250px;
+  position: relative;
   center: calc(33.33% - 13.5vw);
 }
 
 .add-btn:hover {
-  background-color: #327248;
+  background-color: #00db4c;
+}
+
+.add-btn.remove-hover {
+  background-color: #7f2627; /* normal background */
+}
+
+.add-btn.remove-hover:hover {
+  background-color: #e63946; /* hover background */
 }
 
 .modal {
@@ -227,7 +273,7 @@ footer p {
 
 .cover-preview {
   width: 33.33%;
-  max-width: 200px; /* or whatever your intended max */
+  max-width: 200px;
   aspect-ratio: 2 / 3;
   position: relative;
   border: 2px solid #2c2c2c;

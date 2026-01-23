@@ -1,8 +1,12 @@
-from fastapi import FastAPI, Request, Form, Response, Cookie, UploadFile, File, HTTPException
+from math import floor
+
+from fastapi import FastAPI, Request, Form, Response, Cookie, UploadFile, File, HTTPException,Query
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from requests_oauthlib import OAuth2Session
 from fastapi.staticfiles import StaticFiles
+
+from sqlalchemy import or_
 
 from pathlib import Path
 import os, uuid, shutil, time, json
@@ -91,20 +95,43 @@ async def save_cover(file: UploadFile):
     with filepath.open("wb") as f:
         shutil.copyfileobj(file.file, f)
 
-    # Return URL path for browser
     return f"static/assets/covers/{filename}"
 
 # -------------------- ROUTES --------------------
 @app.get("/", response_class=HTMLResponse)
-def homepage(request: Request, page: int = 1, session_id: str = Cookie(None)):
+def homepage(
+    request: Request,
+    page: int = 1,
+    q: str | None = Query(default=None),
+    session_id: str = Cookie(None)
+):
     email = get_session_email(session_id)
     if not email:
         return RedirectResponse(url="/login")
 
     BOOKS_PER_PAGE = 30
     offset = (page - 1) * BOOKS_PER_PAGE
+
     db = SessionLocal()
-    books = db.query(Book).order_by(Book.id).offset(offset).limit(BOOKS_PER_PAGE).all()
+
+    query = db.query(Book)
+
+    if q:
+        query = query.filter(
+            or_(
+                Book.id.ilike(f"%{q}%"),
+                Book.title.ilike(f"%{q}%"),
+                Book.author.ilike(f"%{q}%")
+            )
+        )
+
+    books = (
+        query
+        .order_by(Book.id)
+        .offset(offset)
+        .limit(BOOKS_PER_PAGE)
+        .all()
+    )
 
     for book in books:
         cover_path = Path("frontend") / book.cover
@@ -114,9 +141,18 @@ def homepage(request: Request, page: int = 1, session_id: str = Cookie(None)):
             book.avg_color = "rgb(44, 44, 44)"
 
     db.close()
+
     return frontend.TemplateResponse(
         "home.html",
-        {"request": request, "logged_in": True, "email": email, "books": books, "page": page}
+        {
+            "request": request,
+            "logged_in": True,
+            "email": email,
+            "books": books,
+            "page": page,
+            "total_pages": floor(len(books)/BOOKS_PER_PAGE),
+            "q": q
+        }
     )
 
 @app.get("/login", response_class=HTMLResponse)
@@ -200,11 +236,11 @@ def borrow_book(request: Request, book_id: int, session_id: str = Cookie(None)):
     book = db.query(Book).filter(Book.id == str(book_id)).first()
     if not user or not book:
         db.close()
-        return {"success": False, "message": "User or book not found"}
+        return {"success": False, "message": "Libro o utente non trovato"}
 
     if user.borrowing is not None or book.lent is not None:
         db.close()
-        return {"success": False, "message": "Book is already borrowed"}
+        return {"success": False, "message": "Il libro non è stato prenotato"}
 
     user.borrowing = str(book.id)
     book.lent = str(user.id)

@@ -5,22 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home</title>
   <link href="https://fonts.googleapis.com/css2?family=Iceland&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="static/css/home.css">
 </head>
 <body>
 
-  <header>
-    <a href="/">
-        <img src="static/assets/logo.jpg" alt="Logo" class="logo">
-    </a>
-  </header>
+<header>
+  <a href="/" class="logo-link">
+    <img src="static/assets/logo.jpg" alt="Logo" class="logo">
+  </a>
+
+  <div class="header-rectangle">
+    <a href="/" class="rect-section">Presto..</a>
+    <a href="/" class="rect-section">Presto..</a>
+    <a href="/adminpanel" class="rect-section">Pannello Admin</a>
+  </div>
+</header>
 
   <main>
+<div class="search-bar">
+  <form method="get" action="/">
+    <input
+      type="text"
+      name="q"
+      placeholder="Cerca per ID, titolo o autore..."
+      value="{{ q or '' }}"
+      autocomplete="off"
+    />
+  </form>
+</div>
+      <div class="search-divider"></div>
 <section class="library">
   {% for book in books %}
     <div class="book"
-         style="border: 5px solid {{ book.avg_color }};
-                background-color: {{ book.avg_color | replace('rgb', 'rgba') | replace(')', ',0.2)') }};">
+     data-id="{{ book.id }}"
+     data-avg-color="{{ book.avg_color }}"
+     data-title="{{ book.title }}"
+     data-author="{{ book.author }}"
+     data-cover="{{ book.cover }}"
+     data-description="{{ book.description }}"
+    style="border: 5px solid {{ book.avg_color }};
+                background-color: {{ book.avg_color | replace('rgb', 'rgba') | replace(')', ',0.8)') }};">
+
 
       <img src="{{ book.cover }}" alt="{{ book.title }}">
 
@@ -35,22 +61,66 @@
   {% endfor %}
 </section>
 
-    <div class="pagination">
-      {% if page > 1 %}
-        <a href="/?page={{ page - 1 }}">← Precedente</a>
-      {% endif %}
+<div class="pagination">
 
-      <span>Pagina {{ page }}</span>
+  {% if page > 1 %}
+    <a class="page-arrow" href="/?page={{ page - 1 }}{% if q %}&q={{ q }}{% endif %}">
+      ←
+    </a>
+  {% else %}
+    <span class="page-arrow disabled">←</span>
+  {% endif %}
 
-      {% if books|length == 30 %}
-        <a href="/?page={{ page + 1 }}">Successiva →</a>
-      {% endif %}
-    </div>
+  <form class="page-circle-form" data-total-pages="{{ total_pages }}" >
+    <input
+      type="number"
+      min="1"
+      value="{{ page }}"
+      class="page-circle-input"
+      title="Inserisci il numero pagina e premi Invio"
+    />
+  </form>
+
+  {% if books|length == 30 %}
+    <a class="page-arrow" href="/?page={{ page + 1 }}{% if q %}&q={{ q }}{% endif %}">
+      →
+    </a>
+  {% else %}
+    <span class="page-arrow disabled">→</span>
+  {% endif %}
+
+</div>
+
+
   </main>
 
   <footer>
     <p>Levilibrary Demo</p>
   </footer>
+<div id="book-modal" class="modal hidden">
+  <div class="modal-overlay"></div>
+
+  <div class="modal-content">
+    <img id="modal-cover" src="" alt="Cover">
+    <div class="modal-info-title"></div>
+    <div class="modal-info-description"></div>
+    <div class="modal-info">
+      <h2 id="modal-title"></h2>
+      <p id="modal-author"></p>
+      <p id="modal-description"></p>
+
+      <button id="borrow-btn" class="borrow-btn">Borrow</button>
+    </div>
+  </div>
+</div>
+
+  <script>
+const pageInput = document.querySelector('.page-circle-input');
+const currentPage = {{ page }};  // rendered as a number
+pageInput.addEventListener('blur', () => {
+  pageInput.value = currentPage;
+});</script>
+<script src="static/js/home.js"></script>
 
 </body>
 </html>
