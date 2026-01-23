@@ -199,6 +199,25 @@ def admin_panel(request: Request, session_id: str = Cookie(None)):
         return RedirectResponse(url="/login")
     return frontend.TemplateResponse("adminpanel.html", {"request": request})
 
+@app.get("/adminpanel/getbook")
+def get_book(request: Request, id: int, session_id: str = Cookie(None)):
+    email = get_session_email(session_id)
+    if not email:
+        raise HTTPException(status_code=401, detail="Not logged in")
+    db = SessionLocal()
+    book = db.query(Book).filter(Book.id == id).first()
+    db.close()
+
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    return JSONResponse({
+        "id": book.id,
+        "title": book.title,
+        "author": book.author,
+        "cover": book.cover
+    })
+
 @app.post("/adminpanel/addbook")
 async def add_book(
     request: Request,
@@ -216,6 +235,21 @@ async def add_book(
     db.close()
 
     return JSONResponse({"success": True, "cover": cover_path})
+
+@app.post("/adminpanel/removebook")
+async def remove_book(
+    request: Request,
+    id: int = Form(...),
+):
+    session_id = request.cookies.get("session_id")
+    if not session_id or session_id not in sessions or not sessions[session_id].get("admin"):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    db = SessionLocal()
+    dbi.remove_entry(db, id, user_table=False)
+    db.close()
+
+    return JSONResponse({"success": True})
 
 @app.get("/logout")
 def logout(response: Response, session_id: str = Cookie(None)):

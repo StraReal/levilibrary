@@ -74,3 +74,86 @@ document.getElementById("addBookForm").onsubmit = async (e) => {
     alert("Errore: " + error);
   }
 };
+
+const rmBookModal = document.getElementById("rmBookModal");
+const openRmBookBtn = document.getElementById("openRemoveModal");
+const closeRmBookBtn = document.getElementById("closeRmBookModal");
+
+const confirmBtn = document.getElementById("confirmRmBook");
+
+confirmBtn.classList.remove("disabled");
+confirmBtn.classList.add("disabled");
+
+openRmBookBtn.onclick = () => {
+  rmBookModal.style.display = "flex";
+};
+
+closeRmBookBtn.onclick = () => {
+  rmBookModal.style.display = "none";
+  document.getElementById("rmBookForm").reset();
+};
+
+window.onclick = (e) => {
+  if (e.target === rmBookModal) {
+    rmBookModal.style.display = "none";
+    document.getElementById("rmBookForm").reset();
+  }
+};
+
+const rmBookForm = document.getElementById("rmBookForm");
+
+rmBookForm.addEventListener("submit", async (e) => {
+  e.preventDefault(); // stop page reload
+
+  const idInput = document.getElementById("rmBookId");
+  const bookId = idInput.value;
+
+  if (!bookId) return;
+
+  try {
+    const res = await fetch(`/adminpanel/getbook?id=${bookId}`);
+    if (!res.ok) throw new Error("Book not found");
+
+    const book = await res.json();
+
+    document.getElementById("rmBookTitle").textContent = book.title;
+    document.getElementById("rmBookAuthor").textContent = book.author;
+    document.getElementById("rmBookCover").src = book.cover;
+
+    document.getElementById("confirmRmBook").classList.remove("disabled");
+
+  } catch (err) {
+    alert(err.message);
+    document.getElementById("confirmRmBook").classList.add("disabled");
+  }
+});
+
+confirmBtn.addEventListener("click", async () => {
+  if (confirmBtn.classList.contains("disabled")) return;
+
+  const bookId = document.getElementById("rmBookId").value;
+  if (!bookId) return;
+
+  try {
+    const res = await fetch("/adminpanel/removebook", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `id=${encodeURIComponent(bookId)}`,
+    });
+
+    if (!res.ok) throw new Error("Errore nella rimozione del libro");
+
+    const data = await res.json();
+    if (data.success) {
+      alert("Libro rimosso correttamente");
+      rmBookModal.style.display = "none";
+      rmBookForm.reset();
+      confirmBtn.classList.add("disabled");
+      location.reload();
+    } else {
+      throw new Error(data.message || "Errore sconosciuto");
+    }
+  } catch (err) {
+    alert(err.message);
+  }
+});

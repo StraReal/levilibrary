@@ -95,6 +95,7 @@ footer p {
 }
 
 .add-btn {
+  position: relative;
   background-color: #327248;
   color: #EFEFEF;
   font-weight: bold;
@@ -115,7 +116,6 @@ footer p {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: calc(0.9 * 27vw / 13);
-  position: relative;
   center: calc(33.33% - 13.5vw);
 }
 
@@ -124,11 +124,11 @@ footer p {
 }
 
 .add-btn.remove-hover {
-  background-color: #7f2627; /* normal background */
+  background-color: #7f2627;
 }
 
 .add-btn.remove-hover:hover {
-  background-color: #e63946; /* hover background */
+  background-color: #e63946;
 }
 
 .modal {
@@ -283,6 +283,227 @@ footer p {
 }
 
 .cover-preview img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  transform: translate(-50%, -50%);
+}
+
+
+.rm-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+
+  justify-content: center;
+  align-items: center;
+}
+
+.rm-modal-content {
+  background-color: #fefefe;
+  height: 80vh;
+  max-height: 80vh;
+  aspect-ratio: 1 / 1;
+  max-width: 80vw;
+  padding: 20px;
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.rm-modal-content h2 {
+  font-family: 'Alexandria', sans-serif;
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.rm-modal-content input[type="text"] {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.rm-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.rm-browse-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.rm-browse-btn {
+  cursor: pointer;
+  text-align: center;
+  font-family: 'Alexandria', sans-serif;
+  font-weight: bold;
+  color: #4285F4;
+  text-decoration: underline;
+  center: 0%;
+}
+
+#rmBookForm {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  padding: 0;
+}
+
+#rmBookForm label {
+  display: block;
+  font-family: 'Alexandria', sans-serif;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  text-align: left;
+  color: #333;
+}
+
+#rmBookForm button[type="submit"] {
+  position: absolute;
+  margin-top: 1rem;
+  width: 100%;
+  bottom: 0;
+  height: 8%;
+  border-radius: 12px;
+  border: none;
+  background-color: #2891c1;
+  color: #EFEFEF;
+  font-family: 'Alexandria', sans-serif;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#rmBookForm button[type="submit"]:hover {
+  background-color: #00b2b2;
+}
+
+#rmBookForm button[type="button"] {
+  position: absolute;
+  width: 100%;
+  bottom: calc(8% + 10px);
+  height: 8%;
+  border-radius: 12px;
+  border: none;
+  background-color: #7f2627;
+  color: #EFEFEF;
+  font-family: 'Alexandria', sans-serif;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#rmBookForm button[type="button"]:hover {
+  background-color: #b20000;
+}
+
+#rmBookForm button[type="button"].disabled {
+  background-color: #888;
+  cursor: default;
+}
+
+#rmBookForm button[type="button"].disabled:hover {
+  background-color: #888;
+}
+
+#rmBookInfo {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+}
+#rmBookInfo p {
+  margin-bottom: 0.5rem;
+  font-family: 'Alexandria', sans-serif;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #333;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+#rmBookInfo p#rmBookTitle {
+  color: #1a1a1a;
+}
+
+#rmBookInfo p#rmBookAuthor {
+  color: #555;
+}
+
+#rmBookId {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-sizing: border-box;
+  font-family: 'Alexandria', sans-serif;
+  outline: none;
+}
+
+#rmBookId:focus {
+  border-color: #4285F4;
+  box-shadow: 0 0 5px rgba(66, 133, 244, 0.5);
+}
+
+
+#rmBookId::-webkit-outer-spin-button,
+#rmBookId::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#rmBookId[type=number] {
+  -moz-appearance: textfield;
+}
+
+.rm-cover-preview {
+  height: 21rem;
+  aspect-ratio: 2 / 3;
+  position: relative;
+  border: 2px solid #2c2c2c;
+  overflow: hidden;
+  border-radius: 6px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rm-cover-preview img {
   position: absolute;
   top: 50%;
   left: 50%;
