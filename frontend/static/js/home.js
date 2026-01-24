@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Close modal if clicking on the overlay (outside the content)
   modalOverlay.addEventListener("click", (e) => {
     if (e.target === modalOverlay) {
       closeBookModal()
@@ -30,7 +29,6 @@ function openBookModal(book) {
   document.getElementById("modal-author").textContent = book.dataset.author;
   document.getElementById("modal-description").textContent = book.dataset.description;
   document.getElementById("modal-cover").src = book.dataset.cover;
-
   document.getElementById("book-modal").classList.remove("hidden");
 }
 

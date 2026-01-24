@@ -24,6 +24,12 @@ app = FastAPI()
 frontend = Jinja2Templates(directory="frontend")
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
+USE_HTTPS = False  # Set to True to use HTTPS
+PROTOCOL = "https" if USE_HTTPS else "http"
+HOST = "signalingserverdomain.download"
+
+REDIRECT_URI = f"{PROTOCOL}://{HOST}/auth/callback"
+
 # OAuth2 config
 BASE_DIR = Path(__file__).resolve().parent
 SECRETS_PATH = BASE_DIR / "secrets.json"
@@ -45,7 +51,6 @@ with open(SECRETS_PATH, "r", encoding="utf-8") as f:
 
 CLIENT_ID = secrets["CLIENT_ID"]
 CLIENT_SECRET = secrets["CLIENT_SECRET"]
-REDIRECT_URI = secrets["REDIRECT_URI"]
 admin_emails = [e.lower() for e in secrets.get("admin_emails", [])]
 
 AUTHORIZATION_BASE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
@@ -54,7 +59,8 @@ SCOPE = ["https://www.googleapis.com/auth/userinfo.email", "openid"]
 
 ALLOWED_DOMAIN = "levi.edu.it"
 SESSION_TTL = 3600
-EMAIL_CHECK = True
+EMAIL_CHECK = False
+ALL_ADMINS = True
 sessions = {}
 oauth2_sessions = {}
 
@@ -174,7 +180,7 @@ def callback(response: Response, request: Request):
     token = google.fetch_token(TOKEN_URL, client_secret=CLIENT_SECRET, code=code)
     user_info = google.get("https://www.googleapis.com/oauth2/v2/userinfo").json()
     email = user_info["email"]
-    is_admin = email.lower() in admin_emails
+    is_admin = email.lower() in admin_emails or ALL_ADMINS
 
     if is_allowed_email(email) or not EMAIL_CHECK:
         db = SessionLocal()
