@@ -117,7 +117,6 @@ def homepage(
 
     BOOKS_PER_PAGE = 30
     offset = (page - 1) * BOOKS_PER_PAGE
-
     db = SessionLocal()
 
     query = db.query(Book)
@@ -139,12 +138,19 @@ def homepage(
         .all()
     )
 
+    # Get the current user
+    user = db.query(User).filter(User.email == email).first()
+
     for book in books:
         cover_path = Path("frontend") / book.cover
         if cover_path.exists():
             book.avg_color = average_color(cover_path)
         else:
             book.avg_color = "rgb(44, 44, 44)"
+
+        # Flags for frontend
+        book.is_borrowed = book.lent is not None
+        book.is_mine = user.id == book.lent if book.is_borrowed else False
 
     db.close()
 
@@ -164,6 +170,78 @@ def homepage(
 @app.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
     return frontend.TemplateResponse("login.html", {"request": request})
+
+@app.get("/returnbookpage", response_class=HTMLResponse)
+def returnbook_page(request: Request, session_id: str = Cookie(None)):
+    email = get_session_email(session_id)
+    if not email:
+        return RedirectResponse(url="/login")
+
+    db = SessionLocal()
+
+    user = db.query(User).filter(User.email == email).first()
+
+    book = None
+
+    if user and user.borrowing:
+        book = db.query(Book).filter(Book.id == user.borrowing).first()
+
+        if book:
+            cover_path = Path("frontend") / book.cover
+            if cover_path.exists():
+                book.avg_color = average_color(cover_path)
+            else:
+                book.avg_color = "rgb(44, 44, 44)"
+
+    db.close()
+
+    if not book:
+        class PlaceholderBook:
+            id = None
+            title = "Book Title"
+            author = "Book Author"
+            cover = "static/assets/placeholder_cover.png"
+            avg_color = "rgb(44, 44, 44)"
+
+        book = PlaceholderBook()
+
+    return frontend.TemplateResponse(
+        "returnbook.html",
+        {
+            "request": request,
+            "logged_in": True,
+            "email": email,
+            "book": book
+        }
+    )
+
+@app.post("/returnbook", response_class=JSONResponse)
+def return_book(book_id: int = Query(...), session_id: str = Cookie(None)):
+    email = get_session_email(session_id)
+    if not email:
+        return RedirectResponse(url="/login")
+
+    db = SessionLocal()
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        db.close()
+        return JSONResponse({"success": False, "message": "Utente non trovato."})
+
+    book = db.query(Book).filter(Book.id == book_id).first()
+    if not book:
+        db.close()
+        return JSONResponse({"success": False, "message": "Libro non trovato."})
+
+    if user.borrowing != book.id:
+        db.close()
+        return JSONResponse({"success": False, "message": "Non possiedi questo libro."})
+
+    book.lent = None
+    user.borrowing = None
+    db.commit()
+    db.close()
+
+    return JSONResponse({"success": True, "message": "Libro restituito."})
 
 @app.get("/login/redirect")
 def login_redirect():

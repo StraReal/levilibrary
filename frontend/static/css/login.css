@@ -1,60 +1,5 @@
-/* Reset default margins/paddings */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Header */
-header {
-  height: 200px;
-  width: 100%;
-  background-color: #16214C;
-  display: flex;
-  align-items: center;
-  padding-left: 20px;
-}
-
-/* Logo */
-header .logo {
-  height: 120px; /* Adjust height as needed */
-  margin-left: 20px; /* 20px from the left border */
-}
-
-/* Main content area */
-main {
-  flex: 1;
-  background-color: #EFEFEF;
-  padding: 20px;
-}
-
-/* Footer */
-footer {
-  width: 100%;
-  height: 150px;
-  background-color: #142C36; /* Dark grey stripe */
-  display: flex;
-  justify-content: center; /* Horizontally center content */
-  align-items: center;     /* Vertically center content */
-}
-
-footer p {
-  margin: 0; /* Remove default <p> margin */
-  color: #ffffff; /* White text */
-  font-family: 'Iceland', cursive;
-  font-size: 40px; /* Adjust size as needed */
-  line-height: 1; /* Ensure no extra vertical space */
-}
-
 .login-container {
-  margin-top: 150px;  /* this pushes the text/button 200px below the header */
+  margin-top: 150px;
   text-align: center;
 }
 
@@ -69,14 +14,14 @@ footer p {
   font-weight: bold;
   font-family: 'Alexandria';
   width: 30vw;
-  aspect-ratio: 4 / 1;     /* width:height = 4:1 */
+  aspect-ratio: 4 / 1;
   border: none;
   border-radius: 12px;
   text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 10%;          /* 10% horizontal padding */
+  padding: 0 10%;
   margin: 20px auto 0;
   cursor: pointer;
   transition: background 0.2s;
@@ -85,9 +30,7 @@ footer p {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  /* Scale font to fit the inner width exactly */
-  font-size: calc(0.9 * 30vw / 13); /* 30vw button, 80% usable width, 13 chars text */
+  font-size: calc(0.9 * 30vw / 13);
 }
 
 .google-btn:hover {

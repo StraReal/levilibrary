@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Failed</title>
+  <link href="https://fonts.googleapis.com/css2?family=Iceland&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/returnbook.css">
+  <link rel="stylesheet" href="static/css/main.css">
+  <link rel="icon" href="/static/assets/logo.ico" type="image/x-icon">
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo-link">
+    <img src="static/assets/logo.jpg" alt="Logo" class="logo">
+  </a>
+
+  <div class="header-rectangle">
+    <a href="/" class="rect-section">Homepage</a>
+    <a href="/returnbookpage" class="rect-section" style="flex: 0.8;">Presto..</a>
+    <a href="/adminpanel" class="rect-section">Pannello Admin</a>
+  </div>
+</header>
+
+  <main>
+    <div class="book"
+     data-id="{{ book.id }}"
+     data-avg-color="{{ book.avg_color }}"
+     data-title="{{ book.title }}"
+     data-author="{{ book.author }}"
+     data-cover="{{ book.cover }}"
+     data-description="{{ book.description }}"
+    style="border: 5px solid {{ book.avg_color }};
+                background-color: {{ book.avg_color | replace('rgb', 'rgba') | replace(')', ',0.8)') }};">
+
+
+      <img src="{{ book.cover }}" alt="{{ book.title }}">
+
+      <div class="book-text">
+        <div class="book-text-bg">
+          <div class="book-title">{{ book.title }}</div>
+          <div class="book-author">{{ book.author }}</div>
+        </div>
+      </div>
+
+    </div>
+      <div id="book-modal" class="modal hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-content">
+    <img id="modal-cover" src="" alt="Book Cover">
+      <div class="modal-info-title"></div>
+    <div class="modal-info-description"></div>
+    <div class="modal-info">
+      <h2 id="modal-title"></h2>
+      <p id="modal-author"></p>
+      <p id="modal-description"></p>
+
+        <button id="return-btn" class="return-btn">Restituisci</button>
+    </div>
+  </div>
+</div>
+</main>
+
+  <footer>
+    <p>Levilibrary Demo</p>
+  </footer>
+
+<script src="/static/js/returnbook.js"></script>
+</body>
+</html>
