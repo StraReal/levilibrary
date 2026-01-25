@@ -73,43 +73,46 @@ main {
 
 
 .modal-content {
-  background-color: #fefefe;
+  background-color: #EFEFEF;
   height: 80vh;
   max-height: 80vh;
   aspect-ratio: 1 / 1;
   max-width: 80vw;
-  padding: 20px;
-  border-radius: 12px;
+  padding: 3vh;
+  border-radius: 4vh;
   position: relative;
-  display: flex;
-  flex-direction: column;
   overflow-y: auto;
 }
-
 
 .modal-content h2 {
   font-family: 'Alexandria', sans-serif;
   text-align: center;
-  font-size: 2rem;
-  margin-bottom: 20px;
+  font-size: 5vh;
+  margin-bottom: 1vh;
 }
 
 .modal-content input[type="text"] {
   width: 100%;
-  padding: 0.8rem 1rem;
-  margin-bottom: 1rem;
-  border-radius: 12px;
+  padding: 1vh 0.2vw;
+  border-radius: 1vh;
   border: 1px solid #ccc;
-  font-size: 1rem;
+  font-size: 2vh;
   box-sizing: border-box;
+  font-family: 'Alexandria', sans-serif;
 }
 
 .close {
   position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 24px;
+  top: 1vh;
+  right: 3vh;
+  font-size: 5vh;
   cursor: pointer;
+  transition: color 0.3s;
+  color: black;
+}
+
+.close:hover {
+  color: #ef2310;
 }
 
 .browse-container {
@@ -139,11 +142,9 @@ main {
 }
 
 #addBookForm label {
-  display: block;
   font-family: 'Alexandria', sans-serif;
   font-weight: bold;
-  margin-bottom: 0.5rem;
-  font-size: 1.2rem;
+  font-size: 3vh;
   text-align: left;
   color: #333;
 }
@@ -235,12 +236,12 @@ main {
 }
 
 .rm-modal-content {
-  background-color: #fefefe;
+  background-color: #EFEFEF;
   height: 80vh;
   aspect-ratio: 1 / 1;
   max-width: 80vw;
-  padding: 4vh;
-  border-radius: 12px;
+  padding: 3vh;
+  border-radius: 4vh;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -254,22 +255,18 @@ main {
   margin-bottom: 20px;
 }
 
-.rm-modal-content input[type="text"] {
-  width: 100%;
-  padding: 0.8rem 1rem;
-  margin-bottom: 1rem;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  box-sizing: border-box;
-}
-
 .rm-close {
   position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 24px;
+  top: 1vh;
+  right: 3vh;
+  font-size: 5vh;
   cursor: pointer;
+  transition: color 0.3s;
+  color: black;
+}
+
+.rm-close:hover {
+  color: #ef2310;
 }
 
 .rm-browse-container {

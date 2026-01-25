@@ -84,16 +84,16 @@
   position: relative;
   color: white;
   display: flex;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  border-radius: 16px;
-  max-width: 800px;
-  width: 90%;
+  gap: 3.5vh;
+  padding: 3.5vh;
+  border-radius: 3.5vh;
   z-index: 1;
+  height: 37vh; /* 31.5 on each side*/
+  aspect-ratio: 2.5;
 }
 
 .modal-content img {
-  width: 200px;
+  width: 18.5vh;
   aspect-ratio: 2 / 3;
   object-fit: cover;
   border-radius: 8px;
@@ -101,58 +101,70 @@
 
 .modal-info-title {
   position: absolute;
-  padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.5);
   color: white;
-  height: 3.1rem;
-  top: 1.5rem;
-  right: 1rem;
-  left: calc(200px + 2.5rem);
+  height: 5vh;
+  top: 2vh;
+  right: 2vh;
+  left: 23vh;
   z-index: 0;
 }
 
 .modal-info-description {
   position: absolute;
-  padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.5);
   color: white;
-  top: 5.6rem;
-  bottom: 4rem;
-  right: 1rem;
-  left: calc(200px + 2.5rem);
+  top: 8vh;
+  bottom: 7vh;
+  right: 2vh;
+  left: 23vh;
   z-index: 0;
 }
 
 .modal-info h2 {
-position: relative;
-  margin: 0;
+  position: relative;
+  height: 1.5vh;
   color: white;
   z-index: 1;
+  font-size: clamp(1.6vh, 2.4vh, 3vh);
+  top: -1.2vh;
+  left: -1.5vh;
+  white-space: nowrap;
 }
 
 .modal-info p {
-position: relative;
+  position: relative;
+  height: 2vh;
+  margin-top: 0.6vh;
   color: white;
   border-radius: 10px;
   z-index: 1;
+  font-size: clamp(1.2vh, 1.8vh, 2vh);
+  top: -1.2vh;
+  left: -1.5vh;
+  white-space: nowrap;
 }
 
 .return-btn {
   position: absolute;
-  padding: 0.6rem 1.2rem;
+  padding: 0.8vh 3vh;
   border-radius: 8px;
   background: #4bbf28;
   font-family: "Alexandria";
   color: #EFEFEF;
   cursor: pointer;
-  bottom: 1rem;
-  right: 1rem;
-  left: calc(200px + 2.5rem);
-  transition: 0.2s;
+  bottom: 2vh;
+  height: 4vh;
+  right: 2vh;
+  left: 23vh;
+  transition: background 0.2s;
+  font-size: clamp(1vh, 1.5vh, 1.5vh);
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .return-btn:hover {

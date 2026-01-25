@@ -110,7 +110,7 @@
   border-radius: 3.5vh;
   z-index: 1;
   height: 37vh; /* 31.5 on each side*/
-  aspect-ratio: 2;
+  aspect-ratio: 2.5;
 }
 
 .modal-content img {
@@ -140,7 +140,7 @@
   background: rgba(0, 0, 0, 0.5);
   color: white;
   top: 8vh;
-  bottom: 8vh;
+  bottom: 7vh;
   right: 2vh;
   left: 23vh;
   z-index: 0;
@@ -179,10 +179,11 @@
   color: #EFEFEF;
   cursor: pointer;
   bottom: 2vh;
+  height: 4vh;
   right: 2vh;
   left: 23vh;
   transition: background 0.2s;
-  font-size: clamp(1vh, 2.5vh, 2.5vh);
+  font-size: clamp(1vh, 1.5vh, 1.5vh);
   line-height: 1;
   white-space: nowrap;
 }
@@ -200,10 +201,11 @@
   color: #EFEFEF;
   cursor: pointer;
   bottom: 2vh;
+  height: 4vh;
   right: 2vh;
   left: 23vh;
   transition: background 0.2s;
-  font-size: clamp(1vh, 2.5vh, 2.5vh);
+  font-size: clamp(1vh, 1.5vh, 1.5vh);
   line-height: 1;
   white-space: nowrap;
 }
@@ -221,10 +223,11 @@
   color: #EFEFEF;
   cursor: pointer;
   bottom: 2vh;
+  height: 4vh;
   right: 2vh;
   left: 23vh;
   transition: background 0.2s;
-  font-size: clamp(1vh, 2.5vh, 2.5vh);
+  font-size: clamp(1vh, 1.5vh, 1.5vh);
   line-height: 1;
   white-space: nowrap;
 }
