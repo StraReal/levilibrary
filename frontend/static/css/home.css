@@ -265,12 +265,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 2vh;
+  margin-top: 2vh;
 }
 
 .page-arrow {
-  font-size: 1.4rem;
+  font-size: 2vw;
+  margin-bottom: 2vh;
   text-decoration: none;
   color: black;
   transition: 0.2s ease;
@@ -288,8 +289,8 @@
 }
 
 .page-circle {
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2.4vw;
+  aspect-ratio: 1;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.8);
   color: white;
@@ -297,16 +298,17 @@
   justify-content: center;
   align-items: center;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1vw;
 }
 
 .page-circle-form {
   display: inline-block;
+  margin-bottom: 2vh;
 }
 
 .page-circle-input {
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2.4vw;
+  aspect-ratio: 1;
   border-radius: 50%;
   text-align: center;
   border: none;
@@ -314,7 +316,7 @@
   background: rgba(0,0,0,0.8);
   color: white;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1vw;
   cursor: pointer;
   transition: 0.2s ease;
 }
