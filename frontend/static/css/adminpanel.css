@@ -1,18 +1,33 @@
+main {
+  position: relative;
+}
+
+.button-container {
+  top: 50%;
+  left: 2.5vw;
+  background: rgba(100,100,100,0.8);
+  position: absolute;
+  border-radius: 3vw;
+  width: 30vw;
+  height: 63vh;
+  transform: translate(0, -50%);
+}
+
 .add-book-container {
   text-align: center;
   margin-bottom: 20px;
 }
 
 .add-btn {
-  position: relative;
+  position: absolute;
   background-color: #327248;
   color: #EFEFEF;
   font-weight: bold;
   font-family: 'Alexandria';
   width: 27vw;
-  aspect-ratio: 4 / 1;
+  height: 15vh;
   border: none;
-  border-radius: 12px;
+  border-radius: 3vh;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -21,11 +36,10 @@
   transition: background 0.2s;
   box-sizing: border-box;
   text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   font-size: calc(0.9 * 27vw / 13);
-  center: calc(33.33% - 13.5vw);
+  right: 50%;
+  top: 5vh;
+  transform: translate(+50%, 0);
 }
 
 .add-btn:hover {
@@ -34,6 +48,9 @@
 
 .add-btn.remove-hover {
   background-color: #7f2627;
+  right: 50%;
+  top: 50%;
+  transform: translate(+50%, -50%);
 }
 
 .add-btn.remove-hover:hover {
@@ -421,4 +438,35 @@
   max-width: 100%;
   max-height: 100%;
   transform: translate(-50%, -50%);
+}
+
+.log-container {
+  top: 50%;
+  right: 50%;
+  background: black;
+  position: absolute;
+  border-radius: 3vw;
+  width: 30vw;
+  height: 63vh;
+  transform: translate(+50%, -50%);
+  padding: 1vw;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+}
+
+.log-entry {
+  background: rgba(1, 178, 25, 0.06);
+  color: #01b219;
+  padding: 0.8vh 0.8vw;
+  border-radius: 1vh;
+  font-family: 'Alexandria';
+  font-size: 0.85vw;
+  line-height: 1.4;
+  word-wrap: break-word;
 }

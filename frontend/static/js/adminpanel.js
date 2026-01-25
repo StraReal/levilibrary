@@ -8,10 +8,6 @@ const coverPreview = document.querySelector("#coverPreview img");
 openBtn.onclick = () => modal.style.display = "flex";
 closeBtn.onclick = () => modal.style.display = "none";
 
-window.onclick = (e) => {
-  if (e.target == modal) modal.style.display = "none";
-};
-
 coverDropZone.addEventListener("dragover", (e) => {
   e.preventDefault();
   coverDropZone.style.backgroundColor = "rgba(66, 133, 244, 0.1)";
@@ -93,12 +89,13 @@ closeRmBookBtn.onclick = () => {
   document.getElementById("rmBookForm").reset();
 };
 
-window.onclick = (e) => {
+window.addEventListener("click", (e) => {
+  if (e.target === modal) modal.style.display = "none";
   if (e.target === rmBookModal) {
     rmBookModal.style.display = "none";
-    document.getElementById("rmBookForm").reset();
+    rmBookForm.reset();
   }
-};
+});
 
 const rmBookForm = document.getElementById("rmBookForm");
 
@@ -155,5 +152,22 @@ confirmBtn.addEventListener("click", async () => {
     }
   } catch (err) {
     alert(err.message);
+  }
+});
+const logList = document.getElementById("logList");
+
+function addLog(text) {
+  const entry = document.createElement("div");
+  entry.className = "log-entry";
+  entry.textContent = text;
+
+  logList.appendChild(entry);
+
+  logList.parentElement.scrollTop = logList.parentElement.scrollHeight;
+}
+document.addEventListener("DOMContentLoaded", () => {
+  const logContainer = document.getElementById("logContainer");
+  if (logContainer) {
+    logContainer.scrollTop = logContainer.scrollHeight;
   }
 });

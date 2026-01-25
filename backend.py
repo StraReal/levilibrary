@@ -16,7 +16,7 @@ from PIL import Image, ImageStat
 import db_tools.db_reader as dbr
 import db_tools.db_inserter as dbi
 from database import engine, SessionLocal
-from models import Base, User, Book
+from models import Base, User, Book, AdminLog
 
 # -------------------- SETUP --------------------
 Base.metadata.create_all(bind=engine)
@@ -239,6 +239,9 @@ def return_book(book_id: int = Query(...), session_id: str = Cookie(None)):
     book.lent = None
     user.borrowing = None
     db.commit()
+
+    dbi.log_action(db, user_email=email, action=4, book=book)
+
     db.close()
 
     return JSONResponse({"success": True, "message": "Libro restituito."})
@@ -281,7 +284,18 @@ def login_rejected(request: Request):
 def admin_panel(request: Request, session_id: str = Cookie(None)):
     if not session_id or session_id not in sessions or not sessions[session_id].get("admin"):
         return RedirectResponse(url="/login")
-    return frontend.TemplateResponse("adminpanel.html", {"request": request})
+
+    db = SessionLocal()
+    logs = db.query(AdminLog).order_by(AdminLog.timestamp.asc()).all()
+    db.close()
+
+    return frontend.TemplateResponse(
+        "adminpanel.html",
+        {
+            "request": request,
+            "logs": logs,
+        }
+    )
 
 @app.get("/adminpanel/getbook")
 def get_book(request: Request, id: int, session_id: str = Cookie(None)):
@@ -310,12 +324,20 @@ async def add_book(
     cover: UploadFile | None = File(None)
 ):
     session_id = request.cookies.get("session_id")
+    email = get_session_email(session_id)
+    if not email:
+        return RedirectResponse(url="/login")
     if not session_id or session_id not in sessions or not sessions[session_id].get("admin"):
         raise HTTPException(status_code=403, detail="Access denied")
 
     db = SessionLocal()
     cover_path = await save_cover(cover)
     dbi.add_entry(db, title, user_table=False, author=author, cover=cover_path)
+
+    new_book = db.query(Book).filter(Book.title == title, Book.author == author).order_by(Book.id.desc()).first()
+
+    dbi.log_action(db, user_email=email, action=1, book=new_book)
+
     db.close()
 
     return JSONResponse({"success": True, "cover": cover_path})
@@ -326,13 +348,20 @@ async def remove_book(
     id: int = Form(...),
 ):
     session_id = request.cookies.get("session_id")
+    email = get_session_email(session_id)
+    if not email:
+        return RedirectResponse(url="/login")
     if not session_id or session_id not in sessions or not sessions[session_id].get("admin"):
         raise HTTPException(status_code=403, detail="Access denied")
 
     db = SessionLocal()
-    dbi.remove_entry(db, id, user_table=False)
-    db.close()
 
+    book = db.query(Book).filter(Book.id == id).first()
+    if book:
+        dbi.remove_entry(db, id, user_table=False)
+        dbi.log_action(db, user_email=email, action=2, book=book)
+
+    db.close()
     return JSONResponse({"success": True})
 
 @app.get("/logout")
@@ -351,7 +380,7 @@ def borrow_book(request: Request, book_id: int, session_id: str = Cookie(None)):
 
     db = SessionLocal()
     user = db.query(User).filter(User.email == email).first()
-    book = db.query(Book).filter(Book.id == str(book_id)).first()
+    book = db.query(Book).filter(Book.id == book_id).first()
     if not user or not book:
         db.close()
         return {"success": False, "message": "Libro o utente non trovato"}
@@ -360,9 +389,12 @@ def borrow_book(request: Request, book_id: int, session_id: str = Cookie(None)):
         db.close()
         return {"success": False, "message": "Il libro non è stato prenotato"}
 
-    user.borrowing = str(book.id)
-    book.lent = str(user.id)
+    user.borrowing = book.id
+    book.lent = user.id
     db.commit()
-    db.close()
 
+    dbi.log_action(db, user_email=email, action=3, book=book)
+
+    db.close()
     return RedirectResponse(url="/")
+

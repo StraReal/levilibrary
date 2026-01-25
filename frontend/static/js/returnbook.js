@@ -2,6 +2,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("book-modal");
   const modalOverlay = document.querySelector(".modal-overlay");
   const modalContent = document.querySelector(".modal-content");
+  const returnBtn = document.getElementById("return-btn");
+
+  returnBtn.addEventListener("click", async () => {
+      const res = await fetch(`/returnbook?book_id=${selectedBookId}`, { method: "POST", credentials: "include" });
+      if (res.ok) location.reload();
+  });
 
   document.querySelectorAll(".book").forEach(book => {
     book.addEventListener("click", () => {

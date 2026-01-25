@@ -6,8 +6,8 @@
   <title>Admin Panel</title>
   <link href="https://fonts.googleapis.com/css2?family=Iceland&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Alexandria&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/adminpanel.css">
   <link rel="stylesheet" href="static/css/main.css">
+  <link rel="stylesheet" href="static/css/adminpanel.css">
   <link rel="icon" href="/static/assets/logo.ico" type="image/x-icon">
 </head>
 <body>
@@ -25,14 +25,14 @@
 </header>
 
   <main>
+      <div class="button-container">
     <div class="add-book-container">
   <button class="add-btn" id="openAddModal">Aggiungi Libro</button>
   </div>
 <div class="add-book-container">
   <button class="add-btn remove-hover" id="openRemoveModal">Rimuovi Libro</button>
-</div>
+</div></div>
 
-  <!-- Modal -->
   <div class="modal" id="addBookModal">
     <div class="modal-content">
       <span class="close">&times;</span>
@@ -83,6 +83,21 @@
       </div>
         <button type="submit" class="add-btn">Carica Libro</button>
     </form>
+  </div>
+</div>
+<div class="log-container" id="logContainer">
+  <div class="log-list" id="logList">
+    {% for log in logs %}
+      <div class="log-entry">
+        [{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}]
+        {{ log.action }} -
+        {{ log.user_email or "system" }}
+        {% if log.book_id %}
+          <{{ log.book_id }}>
+          Title: "{{ log.book_title }}"
+        {% endif %}
+      </div>
+    {% endfor %}
   </div>
 </div>
   </main>
