@@ -237,10 +237,9 @@ main {
 .rm-modal-content {
   background-color: #fefefe;
   height: 80vh;
-  max-height: 80vh;
   aspect-ratio: 1 / 1;
   max-width: 80vw;
-  padding: 20px;
+  padding: 4vh;
   border-radius: 12px;
   position: relative;
   display: flex;
@@ -251,7 +250,7 @@ main {
 .rm-modal-content h2 {
   font-family: 'Alexandria', sans-serif;
   text-align: center;
-  font-size: 2rem;
+  font-size: 5vh;
   margin-bottom: 20px;
 }
 
@@ -293,38 +292,35 @@ main {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: flex-start;
+  height: 80vh;
   align-items: center;
-  position: relative;
   padding: 0;
 }
 
 #rmBookForm label {
-  display: block;
   font-family: 'Alexandria', sans-serif;
   font-weight: bold;
-  margin-bottom: 0.5rem;
-  font-size: 1.2rem;
+  margin-bottom: 0.5vh;
+  font-size: 3vh;
   text-align: left;
   color: #333;
 }
 
 #rmBookForm button[type="submit"] {
   position: absolute;
-  margin-top: 1rem;
   width: 100%;
-  bottom: 0;
-  height: 8%;
-  border-radius: 12px;
+  bottom: -2vh;
+  height: 6vh;
+  border-radius: 1vh;
   border: none;
   background-color: #2891c1;
   color: #EFEFEF;
   font-family: 'Alexandria', sans-serif;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 120%;
   cursor: pointer;
   transition: background 0.2s;
+  top: unset;
 }
 
 #rmBookForm button[type="submit"]:hover {
@@ -334,9 +330,10 @@ main {
 #rmBookForm button[type="button"] {
   position: absolute;
   width: 100%;
-  bottom: calc(8% + 10px);
-  height: 8%;
-  border-radius: 12px;
+  bottom: 5vh;
+  height: 6vh;
+  top: unset;
+  border-radius: 1vh;
   border: none;
   background-color: #7f2627;
   color: #EFEFEF;
@@ -369,14 +366,14 @@ main {
   align-items: center;
 }
 #rmBookInfo p {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5vh;
   font-family: 'Alexandria', sans-serif;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 3vh;
   color: #333;
   background: rgba(0, 0, 0, 0.05);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  padding: 0.8vh 1.2vw;
+  border-radius: 1vh;
   overflow-wrap: anywhere;
 }
 
@@ -390,14 +387,12 @@ main {
 
 #rmBookId {
   width: 100%;
-  padding: 0.8rem 1rem;
-  margin-bottom: 0.5rem;
-  border-radius: 12px;
+  padding: 1vh 0.2vw;
+  margin-bottom: 1vh;
+  border-radius: 1vh;
   border: 1px solid #ccc;
-  font-size: 1rem;
-  box-sizing: border-box;
+  font-size: 2vh;
   font-family: 'Alexandria', sans-serif;
-  outline: none;
 }
 
 #rmBookId:focus {
@@ -417,16 +412,12 @@ main {
 }
 
 .rm-cover-preview {
-  height: 21rem;
+  height: 30vh;
   aspect-ratio: 2 / 3;
   position: relative;
-  border: 2px solid #2c2c2c;
+  border: 0.2vw solid #2c2c2c;
   overflow: hidden;
   border-radius: 6px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .rm-cover-preview img {

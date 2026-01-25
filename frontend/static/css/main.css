@@ -22,7 +22,7 @@ header {
 }
 
 .header-rectangle {
-  width: 45.9vh;
+  width: 25vw;
   height: 5.1vh;
   background-color: #70ade0;
   border-radius: 1vh;
@@ -45,6 +45,7 @@ header {
   height: 100%;
   position: relative;
   transition: background 0.2s ease;
+  font-size: 100%;
 }
 
 .rect-section:hover {
