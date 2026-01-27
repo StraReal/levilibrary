@@ -38,6 +38,10 @@ TEMPLATE = {
     "CLIENT_SECRET": "your-google-client-secret",
     "REDIRECT_URI": "http://localhost:8000/auth/callback"
 }
+ACTIONS = {
+    0: 'add',
+    1: 'remove',
+}
 
 if not SECRETS_PATH.exists():
     with open(SECRETS_PATH, "w", encoding="utf-8") as f:
@@ -285,6 +289,12 @@ def admin_panel(request: Request, session_id: str = Cookie(None)):
     if not session_id or session_id not in sessions or not sessions[session_id].get("admin"):
         return RedirectResponse(url="/login")
 
+    if not SECRETS_PATH.exists():
+        raise FileNotFoundError("secrets.json not found")
+    with SECRETS_PATH.open("r", encoding="utf-8") as f:
+        secrets = json.load(f)
+    admins = secrets.get("admin_emails", [])
+
     db = SessionLocal()
     logs = db.query(AdminLog).order_by(AdminLog.timestamp.asc()).all()
     db.close()
@@ -294,8 +304,10 @@ def admin_panel(request: Request, session_id: str = Cookie(None)):
         {
             "request": request,
             "logs": logs,
+            "admins": admins,
         }
     )
+
 
 @app.get("/adminpanel/getbook")
 def get_book(request: Request, id: int, session_id: str = Cookie(None)):
@@ -398,3 +410,20 @@ def borrow_book(request: Request, book_id: int, session_id: str = Cookie(None)):
     db.close()
     return RedirectResponse(url="/")
 
+@app.post("/adminpanel/adminchange")
+def change_admin(
+    subject: str = Form(...),
+    action: int = Form(...),
+    session_id: str = Cookie(None)
+):
+    email = get_session_email(session_id)
+    if not email:
+        return RedirectResponse(url="/login")
+    if not session_id or session_id not in sessions or not sessions[session_id].get("admin"):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    db = SessionLocal()
+    dbi.update_admin(email, subject, action, db)
+    db.close()
+
+    return JSONResponse({"success": True})

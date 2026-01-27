@@ -5,9 +5,9 @@ main {
 .button-container {
   top: 50%;
   left: 2.5vw;
-  background: rgba(100,100,100,0.8);
+  background: rgba(100,100,100,0.6);
   position: absolute;
-  border-radius: 3vw;
+  border-radius: 3vh;
   width: 30vw;
   height: 63vh;
   transform: translate(0, -50%);
@@ -55,6 +55,34 @@ main {
 
 .add-btn.remove-hover:hover {
   background-color: #e63946;
+}
+
+.edit-adm-btn {
+  position: absolute;
+  background-color: #0c25a0;
+  color: #EFEFEF;
+  font-weight: bold;
+  font-family: 'Alexandria';
+  width: 27vw;
+  height: 15vh;
+  border: none;
+  border-radius: 3vh;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: calc(0.9 * 27vw / 13);
+  right: 50%;
+  top: 50%;
+  transform: translate(+50%, -50%);
+}
+
+.edit-adm-btn:hover {
+  background-color: #1a203f;
 }
 
 .modal {
@@ -433,7 +461,7 @@ main {
   right: 50%;
   background: black;
   position: absolute;
-  border-radius: 3vw;
+  border-radius: 3vh;
   width: 30vw;
   height: 63vh;
   transform: translate(+50%, -50%);
@@ -457,4 +485,98 @@ main {
   font-size: 0.85vw;
   line-height: 1.4;
   word-wrap: break-word;
+}
+
+.edit-adm-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+
+  justify-content: center;
+  align-items: center;
+}
+
+
+.edit-adm-modal-content {
+  background-color: #EFEFEF;
+  height: 80vh;
+  max-height: 80vh;
+  aspect-ratio: 1 / 1;
+  max-width: 80vw;
+  padding: 3vh;
+  border-radius: 4vh;
+  position: relative;
+  overflow-y: auto;
+}
+
+.edit-adm-modal-content h2 {
+  font-family: 'Alexandria', sans-serif;
+  text-align: center;
+  font-size: 5vh;
+  margin-bottom: 1vh;
+}
+
+.edit-adm-modal-content input[type="text"] {
+  width: 100%;
+  padding: 1vh 0.2vw;
+  border-radius: 1vh;
+  border: 1px solid #ccc;
+  font-size: 2vh;
+  box-sizing: border-box;
+  font-family: 'Alexandria', sans-serif;
+}
+
+.admin-tag {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-input {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #d8d8d8;
+  color: #555;
+  font-family: 'Alexandria', sans-serif;
+  font-size: 100%;
+  width: auto;
+  min-width: 8rem;
+  cursor: disabled;
+}
+
+.remove-admin-btn {
+  position: absolute;
+  right: 5%;
+  color: black;
+  border: none;
+  background: transparent;
+  font-size: 3vh;
+  padding: 1vh 1vh 1.35vh 1vh;
+  transition: color 0.3s;
+  cursor: pointer;
+}
+
+.remove-admin-btn:hover {
+  color: #ef2310;
+}
+
+.admin-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.admin-input--readonly {
+  pointer-events: none;
+  background-color: #2a2a2a;
+  color: #aaa;
+  border: 1px solid #444;
 }

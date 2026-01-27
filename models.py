@@ -9,7 +9,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     email = Column(String, unique=True, nullable=False)
-    borrowing = Column(Integer, nullable=True)  # ID of the book user is borrowing, or None
+    borrowing = Column(Integer, nullable=True)
 
 class Book(Base):
     __tablename__ = "books"
@@ -19,6 +19,7 @@ class Book(Base):
     author = Column(String, nullable=False)
     cover = Column(String, nullable=False)
     lent = Column(Integer, nullable=True)
+    category = Column(String, nullable=False)
 
 class AdminLog(Base):
     __tablename__ = "admin_logs"
@@ -28,4 +29,5 @@ class AdminLog(Base):
     action = Column(String, nullable=False)
     book_id = Column(Integer, ForeignKey("books.id"), nullable=True)
     book_title = Column(String, nullable=True)
+    subject = Column(String, nullable=True)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())

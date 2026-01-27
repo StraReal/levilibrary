@@ -171,3 +171,114 @@ document.addEventListener("DOMContentLoaded", () => {
     logContainer.scrollTop = logContainer.scrollHeight;
   }
 });
+const edAdmBookModal = document.getElementById("edAdmBookModal");
+const openEdAdmModal = document.getElementById("openEdAdmModal");
+const closeEdAdmBookModal = document.getElementById("closeEdAdmBookModal");
+const adminListContainer = document.getElementById("adminListContainer");
+const edAdmBookForm = document.getElementById("edAdmBookForm");
+const newAdminInput = document.getElementById("newAdminInput");
+
+let admins = Array.from(
+  adminListContainer.querySelectorAll(".admin-input")
+).map(input => input.value);
+attachRemoveHandlers();
+
+async function removeAdmin(email) {
+  if (admins.length <= 1) {
+    alert("Non puoi rimuovere l'ultimo admin!");
+    return;
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append("subject", email);
+    formData.append("action", "1");
+
+    const res = await fetch("/adminpanel/adminchange", {
+      method: "POST",
+      body: formData
+    });
+
+    if (!res.ok) throw new Error("Failed to remove admin");
+
+    window.location.reload();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+edAdmBookForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = newAdminInput.value.trim();
+  if (!email || admins.includes(email)) return;
+
+  try {
+    const formData = new FormData();
+    formData.append("subject", email);
+    formData.append("action", "0");
+
+    const res = await fetch("/adminpanel/adminchange", {
+      method: "POST",
+      body: formData
+    });
+
+    if (!res.ok) throw new Error("Failed to add admin");
+
+    window.location.reload();
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+openEdAdmModal.onclick = () => {
+  edAdmBookModal.style.display = "flex";
+  newAdminInput.focus();
+  attachRemoveHandlers();
+};
+
+closeEdAdmBookModal.onclick = () => {
+  edAdmBookModal.style.display = "none";
+  edAdmBookForm.reset();
+};
+
+window.addEventListener("click", (e) => {
+  if (e.target === edAdmBookModal) {
+    edAdmBookModal.style.display = "none";
+    edAdmBookForm.reset();
+  }
+});
+
+function attachRemoveHandlers() {
+  const removeBtns = adminListContainer.querySelectorAll(".remove-admin-btn");
+  removeBtns.forEach((btn, idx) => {
+    const email = admins[idx]; // match by index
+    btn.onclick = () => removeAdmin(email);
+  });
+}
+
+function clearAdminInputs() {
+  // Clear the "new admin" input
+  newAdminInput.value = "";
+
+  adminListContainer.querySelectorAll(".admin-input").forEach(input => {
+    input.value = input.value;
+  });
+}
+
+closeEdAdmBookModal.onclick = () => {
+  edAdmBookModal.style.display = "none";
+  edAdmBookForm.reset();
+  clearAdminInputs();
+};
+
+window.addEventListener("click", (e) => {
+  if (e.target === edAdmBookModal) {
+    edAdmBookModal.style.display = "none";
+    edAdmBookForm.reset();
+    clearAdminInputs();
+  }
+});
+
+window.addEventListener("blur", () => {
+  clearAdminInputs();
+});

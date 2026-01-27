@@ -44,6 +44,9 @@
   <label for="authorInput">Autore</label>
   <input type="text" id="authorInput" name="author" placeholder="Autore" required>
 
+  <label for="catInput">Categoria</label>
+  <input type="text" id="catInput" name="category" placeholder="Categoria" required>
+
 <div class="file-drop-container">
   <div class="file-drop-zone" id="coverDropZone">
     Trascina qui la copertina
@@ -65,7 +68,7 @@
 <div class="rm-modal" id="rmBookModal">
   <div class="rm-modal-content">
     <span class="rm-close" id="closeRmBookModal">&times;</span>
-    <h2>Rimuovi Libro</h2>
+    <h2>Rimuovi un Libro</h2>
 
     <form id="rmBookForm">
       <label for="rmBookId">ID del Libro</label>
@@ -86,18 +89,55 @@
   </div>
 </div>
 <div class="log-container" id="logContainer">
-  <div class="log-list" id="logList">
-    {% for log in logs %}
-      <div class="log-entry">
-        [{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}]
-        {{ log.action }} -
-        {{ log.user_email or "system" }}
-        {% if log.book_id %}
-          <{{ log.book_id }}>
-          Title: "{{ log.book_title }}"
+<div class="log-list" id="logList">
+  {% for log in logs %}
+    <div class="log-entry">
+      [{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}] {{ log.action }} - {{ log.user_email or "system" }}
+
+      {% if log.book_id %}
+        -id <{{ log.book_id }}>-
+        {% if log.book_title %}
+          -title <{{ log.book_title }}>-
         {% endif %}
+      {% endif %}
+
+      {% if log.subject %}
+        -subj {{ log.subject }}-
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+
+</div>
+      <div class="button-container" style="left: unset; right: 2.5vw;">
+          <div class="edit-admins-container">
+              <button class="edit-adm-btn" id="openEdAdmModal">Cambia Admin</button>
+          </div>
       </div>
-    {% endfor %}
+<div class="edit-adm-modal" id="edAdmBookModal">
+  <div class="edit-adm-modal-content">
+    <span class="close" id="closeEdAdmBookModal">&times;</span>
+
+    <h2>Lista Admin</h2>
+<div id="adminListContainer">
+    <script>
+  console.log("Admins:", {{ admins|tojson }});
+</script>
+  {% for admin in admins %}
+    <script>
+  console.log("{{ admin }}");
+</script>
+    <div class="admin-tag">
+      <input type="text" class="admin-input" value="{{ admin }}" readonly/>
+
+      <button type="button" class="remove-admin-btn">×</button>
+    </div>
+  {% endfor %}
+</div>
+
+    <form id="edAdmBookForm">
+      <input type="text" id="newAdminInput" placeholder="Aggiungi nuovo admin..." />
+    </form>
   </div>
 </div>
   </main>

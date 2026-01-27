@@ -1,24 +1,77 @@
-import os
+import os, json
 from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, User, Book, AdminLog
 from datetime import datetime, timezone
+from typing import Literal
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 os.chdir(BASE_DIR)
 
 LOG_ACTIONS = {
+    0: 'unr',
     1: 'add',
     2: 'del',
     3: 'bor',
-    4: 'ret'
+    4: 'ret',
+    5: 'cra',
+    6: 'ada',
+    7: 'adr',
 }
 from db_tools.db_reader import print_db as read_db
 
 DATABASE_URL = "sqlite:///./app.db"
 
-def add_entry(db, entry, user_table=True, author=None, cover=None):
+SECRETS_PATH = Path("secrets.json")
+
+def update_admin(
+    email: str,
+    subject: str,
+    action: int,
+    db) -> bool:
+    subject = subject.strip().lower()
+    if not subject:
+        return False
+
+    if not SECRETS_PATH.exists():
+        raise FileNotFoundError("secrets.json not found")
+
+    with SECRETS_PATH.open("r", encoding="utf-8") as f:
+        secrets = json.load(f)
+
+    admins = set(e.lower() for e in secrets.get("admin_emails", []))
+
+    if email not in admins:
+        return False
+
+    if action == 0:
+        if subject in admins:
+            return False
+        admins.add(subject)
+        log_action(db, user_email=email, subject=subject, action=6)
+
+    elif action == 1:
+        if subject not in admins:
+            return False
+        if len(admins) <= 2:
+            raise RuntimeError("Refusing to remove last admin")
+        admins.remove(subject)
+        log_action(db, user_email=email, subject=subject, action=7)
+    else:
+        return False
+
+    secrets["admin_emails"] = sorted(admins)
+
+    tmp_path = SECRETS_PATH.with_suffix(".tmp")
+    with tmp_path.open("w", encoding="utf-8") as f:
+        json.dump(secrets, f, indent=2)
+
+    tmp_path.replace(SECRETS_PATH)
+    return True
+
+def add_entry(db, entry, user_table=True, author=None, cover=None, category='Unmarked'):
     entry=entry.strip()
     if not entry: return
     if user_table:
@@ -37,8 +90,9 @@ def add_entry(db, entry, user_table=True, author=None, cover=None):
 
     if user_table:
         new_entry = User(email=entry, borrowing=None)
+        log_action(db, entry, 5)
     else:
-        new_entry = Book(title=entry, author=author, cover=cover, lent=None)
+        new_entry = Book(title=entry, author=author, cover=cover, lent=None, category=category)
 
     db.add(new_entry)
     db.commit()
@@ -84,29 +138,94 @@ def remove_entry(db, entry_id, user_table=True):
     db.commit()
     print(f"\nEntry removed successfully from {table_name} with ID: {entry_id}")
 
-def log_action(db, user_email: str | None, action: int, book=None):
-    if action not in LOG_ACTIONS or not LOG_ACTIONS[action]:
-        print(f"\n\033[31mLogging action <{action}> invalid.\033[0m")
+def edit_entry(db, id, title=None, author=None, cover=None, category='Unmarked'):
+    obj = db.query(Book).filter(Book.id == id).first()
+    if not obj:
+        print(f"\nEntry not found in Book with ID: {id}")
         return
 
-    now_utc = datetime.now(timezone.utc)
+    old_lent = obj.lent
 
-    log = AdminLog(
-        user_email=user_email,
-        action=LOG_ACTIONS[action],
-        book_id=getattr(book, "id", None),
-        book_title=getattr(book, "title", None),
-        timestamp=now_utc
-    )
+    if obj.cover and cover != obj.cover:
+        from pathlib import Path
+        cover_path = Path("frontend") / obj.cover
+        if cover_path.exists():
+            try:
+                cover_path.unlink()
+            except:
+                pass
 
-    db.add(log)
+    db.delete(obj)
     db.commit()
 
-    print(
-        f"\nLogging action <{LOG_ACTIONS[action]}> by <{user_email}> "
-        f"on book <{getattr(book, 'title', None)}> "
-        f"(id: <{getattr(book, 'id', None)}>) at <{now_utc.isoformat()}> logged."
+    new_entry = Book(
+        id=id,
+        title=title if title is not None else obj.title,
+        author=author if author is not None else obj.author,
+        cover=cover if cover is not None else obj.cover,
+        lent=old_lent,
+        category=category
     )
+
+    db.add(new_entry)
+    db.commit()
+    print(f"\nEntry edited successfully in Book with ID: {id}")
+
+def log_action(db, user_email: str | None, action: int = 0, subject=None, book=None):
+    if action not in LOG_ACTIONS or not LOG_ACTIONS[action]:
+        print(f"\n\033[31mLogging action <{action}> invalid, defaulting to 0.\033[0m")
+        action = 0
+
+    if book:
+        now_utc = datetime.now(timezone.utc)
+
+        log = AdminLog(
+            user_email=user_email,
+            action=LOG_ACTIONS[action],
+            book_id=getattr(book, "id", None),
+            book_title=getattr(book, "title", None),
+            timestamp=now_utc
+        )
+
+        db.add(log)
+        db.commit()
+
+        print(
+            f"\nLogging action <{LOG_ACTIONS[action]}> by <{user_email}> "
+            f"on book <{getattr(book, 'title', None)}> "
+            f"(id: <{getattr(book, 'id', None)}>) at <{now_utc.isoformat()}> logged."
+        )
+    elif subject:
+        now_utc = datetime.now(timezone.utc)
+        log = AdminLog(
+            user_email=user_email,
+            subject=subject,
+            action=LOG_ACTIONS[action],
+            timestamp=now_utc
+        )
+
+        db.add(log)
+        db.commit()
+
+        print(
+            f"\nLogging action <{LOG_ACTIONS[action]}> by <{user_email}> towards <{subject}> "
+            f"at <{now_utc.isoformat()}> logged."
+        )
+    else:
+        now_utc = datetime.now(timezone.utc)
+        log = AdminLog(
+            user_email=user_email,
+            action=LOG_ACTIONS[action],
+            timestamp=now_utc
+        )
+
+        db.add(log)
+        db.commit()
+
+        print(
+            f"\nLogging action <{LOG_ACTIONS[action]}> by <{user_email}> "
+            f"at <{now_utc.isoformat()}> logged."
+        )
 
 
 def main():
