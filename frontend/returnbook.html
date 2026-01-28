@@ -32,35 +32,38 @@
      data-author="{{ book.author }}"
      data-cover="{{ book.cover }}"
      data-description="{{ book.description }}"
-    style="border: 5px solid {{ book.avg_color }};
-                background-color: {{ book.avg_color | replace('rgb', 'rgba') | replace(')', ',0.8)') }};">
-
-
-      <img src="{{ book.cover }}" alt="{{ book.title }}">
-
-      <div class="book-text">
-        <div class="book-text-bg">
-          <div class="book-title">{{ book.title }}</div>
-          <div class="book-author">{{ book.author }}</div>
-        </div>
-      </div>
-
-    </div>
-      <div id="book-modal" class="modal hidden">
-  <div class="modal-overlay"></div>
-  <div class="modal-content">
-    <img id="modal-cover" src="" alt="Book Cover">
-      <div class="modal-info-title"></div>
-    <div class="modal-info-description"></div>
-    <div class="modal-info">
-      <h2 id="modal-title"></h2>
-      <p id="modal-author"></p>
-      <p id="modal-description"></p>
-
-        <button id="return-btn" class="return-btn">Restituisci</button>
+     data-borrowed="{{ book.is_borrowed }}"
+     data-mine="{{ book.is_mine }}"
+     data-section="{{ book.section }}"
+     data-category="{{ book.category }}"
+     data-shortcat="{{ book.shortcat }}"
+     style="border: 5px solid {{ book.avg_color }};
+            background-color: {{ book.avg_color | replace('rgb', 'rgba') | replace(')', ',0.8)') }};">
+  <img src="{{ book.cover }}" alt="{{ book.title }}">
+  <div class="book-text">
+    <div class="book-text-bg">
+      <div class="book-title">{{ book.title }}</div>
+      <div class="book-author">{{ book.author }}</div>
     </div>
   </div>
 </div>
+      <div id="book-modal" class="modal hidden">
+  <div class="modal-overlay"></div>
+
+  <div class="modal-content">
+    <img id="modal-cover" src="" alt="Cover">
+    <div class="modal-info-title">
+      <h2 id="modal-title"></h2>
+      <p id="modal-author"></p>
+    </div>
+    <div class="modal-info-description">
+      <p id="modal-section"></p>
+      <p id="modal-category"></p>
+    </div>
+      <button id="return-btn" class="return-btn">Restituisci</button>
+    </div>
+  </div>
+
 </main>
 
   <footer>

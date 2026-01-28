@@ -52,6 +52,8 @@ document.getElementById("addBookForm").onsubmit = async (e) => {
   const payload = new FormData();
   payload.append("title", formData.get("title"));
   payload.append("author", formData.get("author"));
+  payload.append("position", formData.get("position"));
+  payload.append("category", formData.get("category"));
 
   if (coverInput.files.length > 0) {
     payload.append("cover", coverInput.files[0]);
@@ -154,6 +156,163 @@ confirmBtn.addEventListener("click", async () => {
     alert(err.message);
   }
 });
+
+//======//
+
+const editBookModal = document.getElementById("editBookModal");
+const openEditModal = document.getElementById("openEditModal");
+const closeEditModal = document.getElementById("closeEditModal");
+const confirmEditBtn = document.getElementById("confirmEditBook");
+const editBookForm = document.getElementById("editBookForm");
+
+const editCoverInput = document.getElementById("editCoverInput");
+const editCoverDropZone = document.getElementById("editCoverDropZone");
+const editCoverPreview = document.querySelector("#editCoverPreview img");
+
+editCoverDropZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  editCoverDropZone.style.backgroundColor = "rgba(66, 133, 244, 0.1)";
+});
+
+editCoverDropZone.addEventListener("dragleave", (e) => {
+  e.preventDefault();
+  editCoverDropZone.style.backgroundColor = "";
+});
+
+editCoverDropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  editCoverDropZone.style.backgroundColor = "";
+  const files = e.dataTransfer.files;
+  if (files.length) {
+    editCoverInput.files = files;
+    updateEditCoverPreview(files[0]);
+  }
+});
+
+editCoverInput.addEventListener("change", () => {
+  if (editCoverInput.files.length > 0) {
+    updateEditCoverPreview(editCoverInput.files[0]);
+  } else {
+    editCoverPreview.src = "static/assets/placeholder_cover.png";
+  }
+});
+
+function updateEditCoverPreview(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    editCoverPreview.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+confirmEditBtn.classList.add("disabled");
+
+openEditModal.onclick = () => {
+  editBookModal.style.display = "flex";
+};
+
+closeEditModal.onclick = () => {
+  editBookModal.style.display = "none";
+  editBookForm.reset();
+  confirmEditBtn.classList.add("disabled");
+};
+
+window.addEventListener("click", (e) => {
+  if (e.target === editBookModal) {
+    editBookModal.style.display = "none";
+    editBookForm.reset();
+    confirmEditBtn.classList.add("disabled");
+  }
+});
+
+editBookForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const bookId = document.getElementById("editBookId").value.trim();
+  if (!bookId) return;
+
+  try {
+    const res = await fetch(`/adminpanel/getbook?id=${bookId}`);
+    if (!res.ok) throw new Error("Libro non trovato");
+
+    const book = await res.json();
+
+    document.getElementById("editBookTitle").value = book.title ?? "";
+    document.getElementById("editBookAuthor").value = book.author ?? "";
+    document.getElementById("editBookSection").value = book.section ?? "";
+    document.getElementById("editBookCategory").value = book.category ?? "";
+    console.log(book.section, book.category)
+
+existingCoverPath = book.cover || null;
+editCoverPreview.src = existingCoverPath || "static/assets/placeholder_cover.png";
+
+    confirmEditBtn.classList.remove("disabled");
+
+    ["editBookTitle", "editBookAuthor", "editBookSection", "editBookCategory"]
+  .forEach(id => document.getElementById(id).required = true);
+
+  } catch (err) {
+    alert(err.message);
+    confirmEditBtn.classList.add("disabled");
+  }
+});
+
+confirmEditBtn.addEventListener("click", async () => {
+  if (confirmEditBtn.classList.contains("disabled")) return;
+
+  try {
+    const id = document.getElementById("editBookId").value.trim();
+    const title = document.getElementById("editBookTitle").value.trim();
+    const author = document.getElementById("editBookAuthor").value.trim();
+    const section = document.getElementById("editBookSection").value.trim();
+    const category = document.getElementById("editBookCategory").value;
+
+    if (!id || !title || !author || !section || !category) {
+      alert("Compila tutti i campi prima di confermare");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("id", id);
+    formData.append("title", title);
+    formData.append("author", author);
+    formData.append("section", section);
+    formData.append("category", category);
+
+    if (editCoverInput.files.length > 0) {
+  formData.append("cover", editCoverInput.files[0]);
+}
+
+    const res = await fetch("/adminpanel/editbook", {
+      method: "POST",
+      body: formData
+    });
+
+    if (!res.ok) throw new Error("Errore nella modifica");
+
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.message || "Errore sconosciuto");
+    }
+
+    alert("Libro modificato correttamente");
+    editBookModal.style.display = "none";
+    editBookForm.reset();
+    confirmEditBtn.classList.add("disabled");
+    location.reload();
+
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+
+document.getElementById("editBookId").addEventListener("input", () => {
+  confirmEditBtn.classList.add("disabled");
+});
+
+//======//
+
 const logList = document.getElementById("logList");
 
 function addLog(text) {

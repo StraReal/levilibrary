@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalOverlay = document.querySelector(".modal-overlay");
   const modalContent = document.querySelector(".modal-content");
   const borrowBtn = document.getElementById("borrow-btn");
-  const returnBtn = document.getElementById("borrow-btn");
 
   let selectedBookId = null;
   let isMine = false;
@@ -21,7 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       document.getElementById("modal-title").textContent = book.dataset.title;
       document.getElementById("modal-author").textContent = book.dataset.author;
-      document.getElementById("modal-description").textContent = book.dataset.description;
+      document.getElementById("modal-section").textContent = 'Scaffale: ' + book.dataset.section;
+      document.getElementById("modal-category").textContent = book.dataset.category + ' (' + book.dataset.shortcat + ')';
       document.getElementById("modal-cover").src = book.dataset.cover;
 
       modalContent.style.backgroundColor = invertedLuminosity(book.dataset.avgColor);
@@ -81,11 +81,11 @@ function rgbToHsl(r, g, b) {
   return [h * 360, s * 100, l * 100];
 }
 
-function invertedLuminosity(rgb) {
+function invertedLuminosity(rgb, alpha = 0.7) {
   const [r, g, b] = rgb.match(/\d+/g).map(Number);
   let [h, s, l] = rgbToHsl(r, g, b);
   l = 100 - l;
-  return `hsl(${h.toFixed(0)}, ${s.toFixed(0)}%, ${l.toFixed(0)}%)`;
+  return `hsla(${h.toFixed(0)}, ${s.toFixed(0)}%, ${l.toFixed(0)}%, ${alpha})`;
 }
 
 document.querySelectorAll('.page-circle-form').forEach(form => {
@@ -105,3 +105,90 @@ document.querySelectorAll('.page-circle-form').forEach(form => {
     window.location.href = `/?${searchParams.toString()}`;
   });
 });
+
+
+const filter = document.getElementById("filterDropdown");
+const menu = filter.querySelector(".filter-menu");
+const filterBtn = filter.querySelector(".filter-btn");
+
+// Read current filters from URL
+const urlParams = new URLSearchParams(window.location.search);
+
+function getFilterValue(key) {
+  return urlParams.get(key) || "Qualunque";
+}
+
+// Update the button text and highlight selected options
+function updateSelectedOptions() {
+  document.querySelectorAll(".filter-category").forEach(category => {
+    const filterKey = category.dataset.filter;
+    const selectedValue = getFilterValue(filterKey);
+
+    category.querySelectorAll(".sub-menu .sub-menu-option").forEach(option => {
+      option.classList.toggle("selected", option.dataset.value === selectedValue);
+    });
+  });
+
+  const availability = getFilterValue("availability");
+  const category = getFilterValue("category");
+
+  const textParts = [];
+  if (availability !== "Qualunque") textParts.push(`Disponibilità: ${availability}`);
+  if (category !== "Qualunque") textParts.push(`Categoria: ${category}`);
+
+  filterBtn.textContent = textParts.length ? textParts.join(", ") : "Aggiungi Filtri";
+}
+
+// Show/hide main dropdown
+filterBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+});
+
+// Hide dropdown if clicked elsewhere
+document.addEventListener("click", () => {
+  menu.style.display = "none";
+});
+
+// Submenu hover behavior
+document.querySelectorAll(".filter-category").forEach(category => {
+  const submenu = category.querySelector(".sub-menu");
+  let hideTimeout;
+
+  category.addEventListener("mouseenter", () => {
+    // Hide all other submenus
+    document.querySelectorAll(".filter-category .sub-menu").forEach(sm => {
+      if (sm !== submenu) sm.style.display = "none";
+    });
+
+    clearTimeout(hideTimeout);
+    submenu.style.display = "flex";
+  });
+
+  category.addEventListener("mouseleave", () => {
+    hideTimeout = setTimeout(() => {
+      submenu.style.display = "none";
+    }, 200);
+  });
+});
+
+// Clicking an option updates the URL (reloads page)
+document.querySelectorAll(".sub-menu-option").forEach(option => {
+  option.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    const filterKey = option.closest(".filter-category").dataset.filter;
+    const value = option.dataset.value;
+
+    const newParams = new URLSearchParams(window.location.search);
+    if (value === "Qualunque") {
+      newParams.delete(filterKey);
+    } else {
+      newParams.set(filterKey, value);
+    }
+
+    window.location.search = newParams.toString();
+  });
+});
+
+updateSelectedOptions();

@@ -75,9 +75,11 @@
 }
 
 .modal-overlay {
+  background-color: rgba(0,0,0, 0.6);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.6);
 }
 
 .modal-content {
@@ -125,18 +127,18 @@
   z-index: 0;
 }
 
-.modal-info h2 {
+.modal-info-title h2 {
   position: relative;
   height: 1.5vh;
   color: white;
   z-index: 1;
   font-size: clamp(1.6vh, 2.4vh, 3vh);
-  top: -1.2vh;
-  left: -1.5vh;
+  top: 0.2vh;
+  left: 0.4vh;
   white-space: nowrap;
 }
 
-.modal-info p {
+.modal-info-title p {
   position: relative;
   height: 2vh;
   margin-top: 0.6vh;
@@ -144,8 +146,22 @@
   border-radius: 10px;
   z-index: 1;
   font-size: clamp(1.2vh, 1.8vh, 2vh);
-  top: -1.2vh;
-  left: -1.5vh;
+  top: 0.4vh;
+  left: 0.4vh;
+  white-space: nowrap;
+}
+
+
+.modal-info-description p {
+  position: relative;
+  height: 2vh;
+  margin-top: 0.6vh;
+  color: white;
+  border-radius: 10px;
+  z-index: 1;
+  font-size: clamp(1.2vh, 1.8vh, 2vh);
+  top: 0.2vh;
+  left: 0.4vw;
   white-space: nowrap;
 }
 

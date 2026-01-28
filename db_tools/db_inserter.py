@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from models import Base, User, Book, AdminLog
 from datetime import datetime, timezone
 from typing import Literal
-
+PLACEHOLDER_COVER = Path("frontend/static/assets/placeholder_cover.png")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 os.chdir(BASE_DIR)
@@ -19,6 +19,7 @@ LOG_ACTIONS = {
     5: 'cra',
     6: 'ada',
     7: 'adr',
+    8: 'edi',
 }
 from db_tools.db_reader import print_db as read_db
 
@@ -71,7 +72,7 @@ def update_admin(
     tmp_path.replace(SECRETS_PATH)
     return True
 
-def add_entry(db, entry, user_table=True, author=None, cover=None, category='Unmarked'):
+def add_entry(db, entry, user_table=True, author=None, cover=None, category='Unmarked', section=None):
     entry=entry.strip()
     if not entry: return
     if user_table:
@@ -92,7 +93,7 @@ def add_entry(db, entry, user_table=True, author=None, cover=None, category='Unm
         new_entry = User(email=entry, borrowing=None)
         log_action(db, entry, 5)
     else:
-        new_entry = Book(title=entry, author=author, cover=cover, lent=None, category=category)
+        new_entry = Book(title=entry, author=author, cover=cover, lent=None, category=category, section=section)
 
     db.add(new_entry)
     db.commit()
@@ -127,7 +128,7 @@ def remove_entry(db, entry_id, user_table=True):
 
         if obj.cover:
             cover_path = Path("frontend") / obj.cover
-            if cover_path.exists():
+            if cover_path.exists() and cover_path != PLACEHOLDER_COVER:
                 try:
                     cover_path.unlink()
                     print(f"Deleted cover file: {cover_path}")
@@ -138,38 +139,29 @@ def remove_entry(db, entry_id, user_table=True):
     db.commit()
     print(f"\nEntry removed successfully from {table_name} with ID: {entry_id}")
 
-def edit_entry(db, id, title=None, author=None, cover=None, category='Unmarked'):
+def edit_entry(db, id, title=None, author=None, cover=None, category=None, section=None):
     obj = db.query(Book).filter(Book.id == id).first()
     if not obj:
         print(f"\nEntry not found in Book with ID: {id}")
         return
 
-    old_lent = obj.lent
-
-    if obj.cover and cover != obj.cover:
-        from pathlib import Path
-        cover_path = Path("frontend") / obj.cover
-        if cover_path.exists():
+    if cover and obj.cover != cover:
+        old_cover_path = Path("frontend") / obj.cover
+        if old_cover_path.exists() and old_cover_path != PLACEHOLDER_COVER:
             try:
-                cover_path.unlink()
-            except:
-                pass
+                old_cover_path.unlink()
+            except Exception as e:
+                print(f"Failed to delete old cover: {e}")
 
-    db.delete(obj)
-    db.commit()
+    obj.title = title if title is not None else obj.title
+    obj.author = author if author is not None else obj.author
+    obj.cover = cover if cover is not None else obj.cover
+    obj.category = category if category not in (None, "Unmarked") else obj.category
+    obj.section = section if section is not None else obj.section
 
-    new_entry = Book(
-        id=id,
-        title=title if title is not None else obj.title,
-        author=author if author is not None else obj.author,
-        cover=cover if cover is not None else obj.cover,
-        lent=old_lent,
-        category=category
-    )
-
-    db.add(new_entry)
     db.commit()
     print(f"\nEntry edited successfully in Book with ID: {id}")
+
 
 def log_action(db, user_email: str | None, action: int = 0, subject=None, book=None):
     if action not in LOG_ACTIONS or not LOG_ACTIONS[action]:

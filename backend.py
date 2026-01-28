@@ -42,6 +42,38 @@ ACTIONS = {
     0: 'add',
     1: 'remove',
 }
+CATEGORIES = {
+    'Unmarked': 'Un',
+    'Autobiografia': 'Au',
+    'Avventura': 'Av',
+    'Biografia': 'Bi',
+    'Classico': 'Cl',
+    'Commedia': 'Cm',
+    'Cyberpunk': 'Cp',
+    'Distopico': 'Di',
+    'Drammatico': 'Dr',
+    'Fantastico': 'Fn',
+    'Fanta-Scienza': 'Fs',
+    'Fantasy': 'Fa',
+    'Fantasy Epico': 'Fe',
+    'Filosofia': 'Fi',
+    'Giallo': 'Gi',
+    'Graphic Novel': 'Gn',
+    'Horror': 'Ho',
+    'Horror Gotico': 'Hg',
+    'Letteratura Contemporanea': 'Lc',
+    'Mitologia': 'Mt',
+    'Mistero': 'Mi',
+    'Poliziesco': 'Pz',
+    'Religione': 'Re',
+    'Romance': 'Ro',
+    'Saggio': 'Sa',
+    'Steampunk': 'Sp',
+    'Thriller': 'Th',
+    'Thriller Psicologico': 'Tp',
+    'Thriller Storico': 'Ts',
+    'Young Adult': 'Ya',
+}
 
 if not SECRETS_PATH.exists():
     with open(SECRETS_PATH, "w", encoding="utf-8") as f:
@@ -95,15 +127,26 @@ def average_color(image_path: Path):
         r, g, b = int(r * 0.8), int(g * 0.8), int(b * 0.8)
         return f"rgb({r}, {g}, {b})"
 
-async def save_cover(file: UploadFile):
+async def save_cover(file: UploadFile, fallback=True):
     if not file or not file.filename:
-        return "static/assets/placeholder_cover.png"
+        if fallback:
+            return "static/assets/placeholder_cover.png"
+        else:
+            return None
 
     ext = file.filename.split(".")[-1]
     filename = f"book_{uuid.uuid4().hex}.{ext}"
     filepath = UPLOAD_DIR / filename
     with filepath.open("wb") as f:
         shutil.copyfileobj(file.file, f)
+
+    with Image.open(filepath) as img:
+        if img.width < 400:
+            scale_factor = 400 / img.width
+            new_width = 400
+            new_height = int(img.height * scale_factor)
+            img = img.resize((new_width, new_height), Image.LANCZOS)
+            img.save(filepath)
 
     return f"static/assets/covers/{filename}"
 
@@ -113,6 +156,8 @@ def homepage(
     request: Request,
     page: int = 1,
     q: str | None = Query(default=None),
+    availability: str | None = Query(default=None),
+    category: str | None = Query(default=None),
     session_id: str = Cookie(None)
 ):
     email = get_session_email(session_id)
@@ -125,6 +170,7 @@ def homepage(
 
     query = db.query(Book)
 
+    # search by q
     if q:
         query = query.filter(
             or_(
@@ -134,27 +180,27 @@ def homepage(
             )
         )
 
-    books = (
-        query
-        .order_by(Book.id)
-        .offset(offset)
-        .limit(BOOKS_PER_PAGE)
-        .all()
-    )
+    # filter by availability
+    if availability == "Disponibile":
+        query = query.filter(Book.lent == None)
+    elif availability == "In Prestito":
+        query = query.filter(Book.lent != None)
 
-    # Get the current user
+    # filter by category
+    if category and category != "Qualunque":
+        query = query.filter(Book.category == category)
+
+    books = query.order_by(Book.id).offset(offset).limit(BOOKS_PER_PAGE).all()
+
+    # current user
     user = db.query(User).filter(User.email == email).first()
 
     for book in books:
         cover_path = Path("frontend") / book.cover
-        if cover_path.exists():
-            book.avg_color = average_color(cover_path)
-        else:
-            book.avg_color = "rgb(44, 44, 44)"
-
-        # Flags for frontend
+        book.avg_color = average_color(cover_path) if cover_path.exists() else "rgb(44,44,44)"
         book.is_borrowed = book.lent is not None
         book.is_mine = user.id == book.lent if book.is_borrowed else False
+        book.shortcat = CATEGORIES[book.category]
 
     db.close()
 
@@ -166,8 +212,11 @@ def homepage(
             "email": email,
             "books": books,
             "page": page,
-            "total_pages": floor(len(books)/BOOKS_PER_PAGE),
-            "q": q
+            "total_pages": floor(len(books) / BOOKS_PER_PAGE),
+            "q": q,
+            "categories": list(CATEGORIES),
+            "current_availability": availability or "Qualunque",
+            "current_category": category or "Qualunque",
         }
     )
 
@@ -305,6 +354,7 @@ def admin_panel(request: Request, session_id: str = Cookie(None)):
             "request": request,
             "logs": logs,
             "admins": admins,
+            "categories": CATEGORIES
         }
     )
 
@@ -325,7 +375,9 @@ def get_book(request: Request, id: int, session_id: str = Cookie(None)):
         "id": book.id,
         "title": book.title,
         "author": book.author,
-        "cover": book.cover
+        "cover": book.cover,
+        "section": book.section,
+        "category": book.category,
     })
 
 @app.post("/adminpanel/addbook")
@@ -333,7 +385,9 @@ async def add_book(
     request: Request,
     title: str = Form(...),
     author: str = Form(...),
-    cover: UploadFile | None = File(None)
+    section: int = Form(...),
+    category: str = Form(...),
+    cover: UploadFile | None = File(None),
 ):
     session_id = request.cookies.get("session_id")
     email = get_session_email(session_id)
@@ -344,11 +398,41 @@ async def add_book(
 
     db = SessionLocal()
     cover_path = await save_cover(cover)
-    dbi.add_entry(db, title, user_table=False, author=author, cover=cover_path)
+    dbi.add_entry(db, title, user_table=False, author=author, cover=cover_path, category=category, section=section)
 
     new_book = db.query(Book).filter(Book.title == title, Book.author == author).order_by(Book.id.desc()).first()
 
     dbi.log_action(db, user_email=email, action=1, book=new_book)
+
+    db.close()
+
+    return JSONResponse({"success": True, "cover": cover_path})
+
+@app.post("/adminpanel/editbook")
+async def edit_book(
+    request: Request,
+    id: int = Form(...),
+    title: str = Form(...),
+    author: str = Form(...),
+    section: int = Form(...),
+    category: str = Form(...),
+    cover: UploadFile | None = File(None),
+):
+    session_id = request.cookies.get("session_id")
+    email = get_session_email(session_id)
+    if not email:
+        return RedirectResponse(url="/login")
+    if not session_id or session_id not in sessions or not sessions[session_id].get("admin"):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    db = SessionLocal()
+    cover_path = await save_cover(cover, False)
+
+    dbi.edit_entry(db, id, title, author=author, cover=cover_path, category=category, section=section)
+
+    new_book = db.query(Book).filter(Book.title == title, Book.author == author).order_by(Book.id.desc()).first()
+
+    dbi.log_action(db, user_email=email, action=8, book=new_book)
 
     db.close()
 

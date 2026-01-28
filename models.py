@@ -20,6 +20,7 @@ class Book(Base):
     cover = Column(String, nullable=False)
     lent = Column(Integer, nullable=True)
     category = Column(String, nullable=False)
+    section = Column(Integer, nullable=True) # Scaffale
 
 class AdminLog(Base):
     __tablename__ = "admin_logs"

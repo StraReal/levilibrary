@@ -25,6 +25,7 @@
 </header>
 
   <main>
+      <div>
 <div class="search-bar">
   <form method="get" action="/">
     <input
@@ -36,6 +37,29 @@
       id="searchInput"
     />
   </form>
+    </div>
+<div class="filter" id="filterDropdown">
+  <button class="filter-btn">Aggiungi Filtri</button>
+  <div class="filter-menu">
+<div class="filter-category" data-filter="category">Categorie
+  <div class="sub-menu">
+    <div class="sub-menu-option" data-value="Qualunque">Qualunque</div>
+      {% for category in categories %}
+    <div class="sub-menu-option" data-value="{{ category }}">{{ category }}</div>
+      {% endfor %}
+  </div>
+</div>
+
+<div class="filter-category" data-filter="availability">Disponibilità
+  <div class="sub-menu">
+    <div class="sub-menu-option" data-value="Qualunque">Qualunque</div>
+    <div class="sub-menu-option" data-value="In Prestito">In Prestito</div>
+    <div class="sub-menu-option" data-value="Disponibile">Disponibile</div>
+  </div>
+</div>
+    </div>
+  </div>
+</div>
 </div>
 
 <script>
@@ -56,6 +80,9 @@
      data-description="{{ book.description }}"
      data-borrowed="{{ book.is_borrowed }}"
      data-mine="{{ book.is_mine }}"
+     data-section="{{ book.section }}"
+     data-category="{{ book.category }}"
+     data-shortcat="{{ book.shortcat }}"
      style="border: 5px solid {{ book.avg_color }};
             background-color: {{ book.avg_color | replace('rgb', 'rgba') | replace(')', ',0.8)') }};">
   <img src="{{ book.cover }}" alt="{{ book.title }}">
@@ -82,8 +109,7 @@
 
   <form class="page-circle-form" data-total-pages="{{ total_pages }}" >
     <input
-      type="number"
-      min="1"
+      type="number" min="1"
       value="{{ page }}"
       class="page-circle-input"
       title="Inserisci il numero pagina e premi Invio"
@@ -111,13 +137,14 @@
 
   <div class="modal-content">
     <img id="modal-cover" src="" alt="Cover">
-    <div class="modal-info-title"></div>
-    <div class="modal-info-description"></div>
-    <div class="modal-info">
+    <div class="modal-info-title">
       <h2 id="modal-title"></h2>
       <p id="modal-author"></p>
-      <p id="modal-description"></p>
-
+    </div>
+    <div class="modal-info-description">
+      <p id="modal-section"></p>
+      <p id="modal-category"></p>
+    </div>
       <button id="borrow-btn" class="borrow-btn">Prendi in Prestito</button>
     </div>
   </div>

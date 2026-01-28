@@ -31,6 +31,9 @@
   </div>
 <div class="add-book-container">
   <button class="add-btn remove-hover" id="openRemoveModal">Rimuovi Libro</button>
+</div>
+<div class="add-book-container">
+  <button class="add-btn edit-hover" id="openEditModal">Modifica Libro</button>
 </div></div>
 
   <div class="modal" id="addBookModal">
@@ -44,8 +47,21 @@
   <label for="authorInput">Autore</label>
   <input type="text" id="authorInput" name="author" placeholder="Autore" required>
 
-  <label for="catInput">Categoria</label>
-  <input type="text" id="catInput" name="category" placeholder="Categoria" required>
+<div class="form-row">
+  <div class="form-group">
+    <label for="positionInput">Scaffale</label>
+    <input type="text" id="positionInput" name="author" placeholder="Scaffale" required>
+  </div>
+
+  <div class="form-group">
+    <label for="catInput">Categoria</label>
+    <select id="catInput" name="category" required>
+    <option value="" disabled selected>Seleziona categoria</option>
+    {% for name, code in categories.items() %}
+        <option value="{{ code }}">{{ name }} ({{ code }})</option>
+    {% endfor %}
+</select>
+</div></div>
 
 <div class="file-drop-container">
   <div class="file-drop-zone" id="coverDropZone">
@@ -62,7 +78,6 @@
 </form>
     </div>
   </div>
-
 
 
 <div class="rm-modal" id="rmBookModal">
@@ -88,6 +103,57 @@
     </form>
   </div>
 </div>
+
+<div class="edit-modal" id="editBookModal">
+  <div class="edit-modal-content">
+    <span class="edit-close" id="closeEditModal">&times;</span>
+    <h2>Modifica un Libro</h2>
+
+    <form id="editBookForm">
+      <label for="editBookId">ID del Libro</label>
+      <input type="number" id="editBookId" name="book_id" placeholder="Inserisci ID" required />
+
+      <div id="editBookInfo">
+        <label for="editBookTitle">Titolo</label>
+        <input type="text" id="editBookTitle" name="title" placeholder="Titolo del libro" />
+
+        <label for="editBookAuthor">Autore</label>
+        <input type="text" id="editBookAuthor" name="author" placeholder="Autore del libro" />
+
+<div class="form-row">
+  <div class="form-group">
+    <label for="editBookSection">Scaffale</label>
+    <input type="text" id="editBookSection" name="author" placeholder="Scaffale" >
+  </div>
+
+  <div class="form-group">
+    <label for="editBookCategory">Categoria</label>
+    <select id="editBookCategory" name="category" >
+    <option value="" disabled selected>Seleziona categoria</option>
+    {% for name, code in categories.items() %}
+        <option value="{{ name }}">{{ name }} ({{ code }})</option>
+    {% endfor %}
+</select>
+</div></div>
+
+<div class="file-drop-container" style="margin-top: 1vh; margin-bottom: 0.5vh;">
+  <div class="file-drop-zone" id="editCoverDropZone">
+    Trascina qui la copertina
+    <label for="editCoverInput" class="browse-btn">Sfoglia</label>
+    <input type="file" id="editCoverInput" name="cover" accept="image/*" hidden>
+  </div>
+  <div class="cover-preview" id="editCoverPreview">
+    <img src="static/assets/placeholder_cover.png" alt="Anteprima copertina">
+  </div>
+</div>
+
+      </div>
+        <button type="button" class="add-btn" id="confirmEditBook">Conferma Modifiche</button>
+      <button type="submit" class="add-btn">Carica Libro</button>
+    </form>
+  </div>
+</div>
+
 <div class="log-container" id="logContainer">
 <div class="log-list" id="logList">
   {% for log in logs %}
