@@ -144,7 +144,11 @@ function updateSelectedOptions() {
   if (availability !== "Qualunque") textParts.push(`Disponibilità: ${availability}`);
   if (category !== "Qualunque") textParts.push(`Categoria: ${category}`);
 
-  filterBtn.textContent = textParts.length ? textParts.join(", ") : "Aggiungi Filtri";
+if (textParts.length) {
+  filterBtn.innerHTML = textParts.map(part => `<span>${part}</span>`).join(" ");
+} else {
+  filterBtn.innerHTML = "<span>Aggiungi Filtri</span>";
+}
 
 filterBtn.addEventListener("click", (e) => {
   e.stopPropagation();

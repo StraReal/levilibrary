@@ -82,9 +82,9 @@ footer {
 
 footer p {
   margin: 0;
-  color: #ffffff;
+  color: #dbfcf9;
   font-family: 'Iceland', cursive;
-  font-size: clamp(2.5vw, 4vh, 40px);
+  font-size: min(2vw, 3.2vh);
   line-height: 1;
 }
 

@@ -293,6 +293,17 @@
   font-size: 1.5vh;
   cursor: pointer;
   transition: background 0.2s;
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+
+.filter-btn span {
+  display: inline;
+}
+
+.filter-btn span::after {
+  content: "\A";
+  white-space: pre;
 }
 
 .filter-btn:hover {

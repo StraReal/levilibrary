@@ -11,6 +11,7 @@ main {
   width: 30vw;
   height: 63vh;
   transform: translate(0, -50%);
+  border: 1vh solid #5e5e5e;
 }
 
 .add-book-container {
