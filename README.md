@@ -52,11 +52,15 @@ http://127.0.0.1:8000
 ## Accesso
 
 - Gli utenti devono utilizzare un’email dell’organizzazione `@levi.edu.it` per autenticarsi.  
-- Se la tua email non appartiene al dominio, puoi inserirla nella lista `admin_emails` di `secrets.json` per ottenere l’accesso.  
+- Altrimenti, le email admin potranno accedere ad ogni modo.
 
 ## Funzionalità principali
 
 - Visualizzazione della libreria con paginazione  
-- Ricerca libri per ID, titolo o autore  
-- Aggiunta/rimozione di libri attraverso il pannello admin
+- Ricerca libri per ID, titolo o autore
+- Filtri per homepage
+- Aggiunta, modifica o rimozione di libri attraverso il pannello admin
 - Autenticazione tramite email dell’organizzazione con Google OAuth
+- Prestito e restituzione dei libri
+- Registro attività
+
