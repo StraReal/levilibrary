@@ -111,23 +111,31 @@ const filter = document.getElementById("filterDropdown");
 const menu = filter.querySelector(".filter-menu");
 const filterBtn = filter.querySelector(".filter-btn");
 
-// Read current filters from URL
 const urlParams = new URLSearchParams(window.location.search);
 
 function getFilterValue(key) {
   return urlParams.get(key) || "Qualunque";
 }
 
-// Update the button text and highlight selected options
 function updateSelectedOptions() {
   document.querySelectorAll(".filter-category").forEach(category => {
     const filterKey = category.dataset.filter;
     const selectedValue = getFilterValue(filterKey);
 
-    category.querySelectorAll(".sub-menu .sub-menu-option").forEach(option => {
-      option.classList.toggle("selected", option.dataset.value === selectedValue);
+    const submenu = document.querySelector(
+      `.sub-menu[data-anchor="${category.id}"]`
+    );
+
+    if (!submenu) return;
+
+    submenu.querySelectorAll(".sub-menu-option").forEach(option => {
+      option.classList.toggle(
+        "selected",
+        option.dataset.value === selectedValue
+      );
     });
   });
+}
 
   const availability = getFilterValue("availability");
   const category = getFilterValue("category");
@@ -137,47 +145,61 @@ function updateSelectedOptions() {
   if (category !== "Qualunque") textParts.push(`Categoria: ${category}`);
 
   filterBtn.textContent = textParts.length ? textParts.join(", ") : "Aggiungi Filtri";
-}
 
-// Show/hide main dropdown
 filterBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   menu.style.display = menu.style.display === "flex" ? "none" : "flex";
 });
 
-// Hide dropdown if clicked elsewhere
 document.addEventListener("click", () => {
   menu.style.display = "none";
 });
 
-// Submenu hover behavior
 document.querySelectorAll(".filter-category").forEach(category => {
-  const submenu = category.querySelector(".sub-menu");
+  const id = category.id;
+  category.style.anchorName = `--${id}`;
+
+  const submenu = document.querySelector(
+    `.sub-menu[data-anchor="${id}"]`
+  );
+
+  if (!submenu) return;
+
+  submenu.style.positionAnchor = `--${id}`;
+
   let hideTimeout;
 
-  category.addEventListener("mouseenter", () => {
-    // Hide all other submenus
-    document.querySelectorAll(".filter-category .sub-menu").forEach(sm => {
-      if (sm !== submenu) sm.style.display = "none";
-    });
-
+  const show = () => {
     clearTimeout(hideTimeout);
     submenu.style.display = "flex";
-  });
+  };
 
-  category.addEventListener("mouseleave", () => {
+  const hide = () => {
     hideTimeout = setTimeout(() => {
       submenu.style.display = "none";
     }, 200);
+  };
+
+  category.addEventListener("mouseenter", () => {
+    document.querySelectorAll(".sub-menu").forEach(sm => {
+      if (sm !== submenu) sm.style.display = "none";
+    });
+    show();
   });
+
+  category.addEventListener("mouseleave", hide);
+
+  submenu.addEventListener("mouseenter", show);
+  submenu.addEventListener("mouseleave", hide);
 });
 
-// Clicking an option updates the URL (reloads page)
 document.querySelectorAll(".sub-menu-option").forEach(option => {
   option.addEventListener("click", (e) => {
     e.stopPropagation();
 
-    const filterKey = option.closest(".filter-category").dataset.filter;
+const anchorId = option.closest(".sub-menu").dataset.anchor;
+const category = document.getElementById(anchorId);
+const filterKey = category.dataset.filter;
     const value = option.dataset.value;
 
     const newParams = new URLSearchParams(window.location.search);

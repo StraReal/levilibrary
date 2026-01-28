@@ -189,10 +189,12 @@
     <script>
   console.log("Admins:", {{ admins|tojson }});
 </script>
+    {% for gadmin in gadmins %}
+    <div class="admin-tag">
+      <input type="text" class="golden-admin-input" value="{{ gadmin }}" readonly/>
+    </div>
+  {% endfor %}
   {% for admin in admins %}
-    <script>
-  console.log("{{ admin }}");
-</script>
     <div class="admin-tag">
       <input type="text" class="admin-input" value="{{ admin }}" readonly/>
 

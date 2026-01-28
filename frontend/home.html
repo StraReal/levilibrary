@@ -40,25 +40,31 @@
     </div>
 <div class="filter" id="filterDropdown">
   <button class="filter-btn">Aggiungi Filtri</button>
-  <div class="filter-menu">
-<div class="filter-category" data-filter="category">Categorie
-  <div class="sub-menu">
-    <div class="sub-menu-option" data-value="Qualunque">Qualunque</div>
-      {% for category in categories %}
-    <div class="sub-menu-option" data-value="{{ category }}">{{ category }}</div>
-      {% endfor %}
-  </div>
-</div>
 
-<div class="filter-category" data-filter="availability">Disponibilità
-  <div class="sub-menu">
+  <div class="filter-menu">
+    <div class="filter-category" data-filter="category" id="cat-anchor">
+      Categorie
+    </div>
+
+    <div class="filter-category" data-filter="availability" id="avail-anchor">
+      Disponibilità
+    </div>
+  </div>
+
+  <!-- Sub-menus live outside -->
+  <div class="sub-menu" data-anchor="cat-anchor">
+    <div class="sub-menu-option" data-value="Qualunque">Qualunque</div>
+    {% for category in categories %}
+      <div class="sub-menu-option" data-value="{{ category }}">{{ category }}</div>
+    {% endfor %}
+  </div>
+
+  <div class="sub-menu" data-anchor="avail-anchor">
     <div class="sub-menu-option" data-value="Qualunque">Qualunque</div>
     <div class="sub-menu-option" data-value="In Prestito">In Prestito</div>
     <div class="sub-menu-option" data-value="Disponibile">Disponibile</div>
   </div>
 </div>
-    </div>
-  </div>
 </div>
 </div>
 

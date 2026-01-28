@@ -820,7 +820,21 @@ main {
   font-size: 100%;
   width: auto;
   min-width: 8rem;
-  cursor: disabled;
+  cursor: not-allowed;
+}
+
+.golden-admin-input {
+  width: auto;
+  min-width: 8rem;
+  border: 0.2vh solid #e5a606 !important;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #e6cf95;
+  color: #555;
+  font-family: 'Alexandria', sans-serif;
+  font-size: 100%;
+  cursor: not-allowed;
+  box-shadow: 0 0 0.5vh 0.2vh rgba(229, 166, 6, 0.7);
 }
 
 .remove-admin-btn {

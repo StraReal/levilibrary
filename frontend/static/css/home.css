@@ -267,6 +267,11 @@
   outline: none;
   font-family: inherit;
   font-size: 1.5vh;
+  transition: background 0.2s;
+}
+
+.search-bar input:hover {
+  background: #fffdf1;
 }
 
 .filter {
@@ -287,6 +292,11 @@
   font-family: inherit;
   font-size: 1.5vh;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.filter-btn:hover {
+  background: #fffdf1;
 }
 
 .filter-menu {
@@ -303,6 +313,8 @@
 }
 
 .filter-category {
+  cursor: pointer;
+  anchor-name: --self;
   position: relative;
   padding: 1vh 1.2vw;
   background: rgba(0,0,0,0);
@@ -315,12 +327,13 @@
 }
 
 .sub-menu {
-  top: 0;
   display: none;
   flex-direction: column;
   position: absolute;
-  left: calc(100% + 0.5vh);
-  background: rgba(240,240,240,0.9);
+  position-anchor: attr(data-anchor);
+  top: anchor(top);
+  left: calc(anchor(right) + 0.5vh);
+  background: rgba(240,240,240,0.7);
   border-radius: 10px;
   z-index: 11;
   padding: 1vh 0.5vh;
