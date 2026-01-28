@@ -52,7 +52,7 @@ document.getElementById("addBookForm").onsubmit = async (e) => {
   const payload = new FormData();
   payload.append("title", formData.get("title"));
   payload.append("author", formData.get("author"));
-  payload.append("position", formData.get("position"));
+  payload.append("section", formData.get("section"));
   payload.append("category", formData.get("category"));
 
   if (coverInput.files.length > 0) {
@@ -102,7 +102,7 @@ window.addEventListener("click", (e) => {
 const rmBookForm = document.getElementById("rmBookForm");
 
 rmBookForm.addEventListener("submit", async (e) => {
-  e.preventDefault(); // stop page reload
+  e.preventDefault();
 
   const idInput = document.getElementById("rmBookId");
   const bookId = idInput.value;
@@ -410,13 +410,12 @@ window.addEventListener("click", (e) => {
 function attachRemoveHandlers() {
   const removeBtns = adminListContainer.querySelectorAll(".remove-admin-btn");
   removeBtns.forEach((btn, idx) => {
-    const email = admins[idx]; // match by index
+    const email = admins[idx];
     btn.onclick = () => removeAdmin(email);
   });
 }
 
 function clearAdminInputs() {
-  // Clear the "new admin" input
   newAdminInput.value = "";
 
   adminListContainer.querySelectorAll(".admin-input").forEach(input => {

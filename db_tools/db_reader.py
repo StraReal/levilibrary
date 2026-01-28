@@ -77,7 +77,6 @@ def print_db(db, table: int = 0, message: str = ''):
 
 def main():
     db = SessionLocal()
-    # Add missing columns to all tables
     for table_cls in [User, Book, AdminLog]:
         add_missing_columns(table_cls)
 

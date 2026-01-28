@@ -171,7 +171,6 @@ def homepage(
 
     query = db.query(Book)
 
-    # search by q
     if q:
         query = query.filter(
             or_(
@@ -181,19 +180,16 @@ def homepage(
             )
         )
 
-    # filter by availability
     if availability == "Disponibile":
         query = query.filter(Book.lent == None)
     elif availability == "In Prestito":
         query = query.filter(Book.lent != None)
 
-    # filter by category
     if category and category != "Qualunque":
         query = query.filter(Book.category == category)
 
     books = query.order_by(Book.id).offset(offset).limit(BOOKS_PER_PAGE).all()
 
-    # current user
     user = db.query(User).filter(User.email == email).first()
 
     for book in books:

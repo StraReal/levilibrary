@@ -60,14 +60,11 @@ def return_book(db, user_id: int, book_id: int) -> bool:
     print(f"User {user_id} returned book {book_id}.")
     return True
 
-
-# ===== Example usage =====
 if __name__ == "__main__":
     db = SessionLocal()
     action = None
     while action not in ('b', 'r'):
         action = input("Action: borrow or return? (b/r): ")
-    # IDs to test
     uid = int(input('Enter user ID: '))
     bid = int(input('Enter book ID: '))
 
