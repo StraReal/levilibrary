@@ -87,3 +87,43 @@ footer p {
   font-size: 40px;
   line-height: 1;
 }
+
+.icon-space {
+  margin-left: 0.5vw;
+  padding: 0.5vw;
+  display: flex;
+  gap: 0.5vw;
+  justify-content: center;
+  align-items: center;
+  background: #011c29;
+  border-radius: 1.75vw;
+  height: 3.5vw;
+}
+
+.icon-circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.5vw;
+  height: 2.5vw;
+  background: #22465b;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.icon-circle:hover {
+  background: #6197b7;
+}
+
+.icon-circle img {
+  display: block;
+  width: 1.5vw;
+  height: 1.5vw;
+}
+
+.icon-circle.inverted img {
+  display: block;
+  width: 1.5vw;
+  height: 1.5vw;
+  filter: invert(1);
+}
