@@ -7,7 +7,13 @@ LeviLibrary è un sito web di gestione di libri con autenticazione tramite email
 - Python 3.10+
 - Uvicorn
 - FastAPI
-- SQLAlchemy (o altro ORM utilizzato nel backend)
+- SQLAlchemy
+
+E altre dependencies, che possono essere installate direttamente eseguendo
+```bash
+  pip install -r requirements.txt
+```
+nella console del venv.
 
 ## Configurazione
 
@@ -34,7 +40,7 @@ LeviLibrary è un sito web di gestione di libri con autenticazione tramite email
 2. Eseguire:
 
 ```bash
-uvicorn backend:app --reload
+  uvicorn backend:app
 ```
 
 3. Il sito sarà accessibile su:
