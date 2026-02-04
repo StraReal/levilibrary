@@ -2,3 +2,8 @@
 /.idea/
 /db_tools/app.db
 /secrets.json
+/lib/
+/__pycache__/
+/include/
+/bin/
+pyvenv.cfg
