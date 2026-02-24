@@ -1,6 +1,6 @@
 from math import floor
 
-from fastapi import FastAPI, Request, Form, Response, Cookie, UploadFile, File, HTTPException,Query
+from fastapi import FastAPI, Request, Form, Response, Cookie, UploadFile, File, HTTPException,Query, status
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from requests_oauthlib import OAuth2Session
@@ -98,7 +98,7 @@ SCOPE = ["https://www.googleapis.com/auth/userinfo.email", "openid"]
 
 ALLOWED_DOMAIN = "levi.edu.it"
 SESSION_TTL = 3600
-EMAIL_CHECK = False
+EMAIL_CHECK = True
 ALL_ADMINS = False
 sessions = {}
 oauth2_sessions = {}
@@ -311,8 +311,17 @@ def login_redirect():
 def callback(response: Response, request: Request):
     code = request.query_params.get("code")
     state = request.query_params.get("state")
-    google = oauth2_sessions.pop(state)
-    token = google.fetch_token(TOKEN_URL, client_secret=CLIENT_SECRET, code=code)
+    if not code or not state:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing OAuth code or state."
+        )
+    google = oauth2_sessions.pop(state, None)  # no KeyError
+    if google is None:
+        # State is unknown/expired – send the user back to login
+        return RedirectResponse(url="/loginrejected?reason=invalid_state")
+
+    google.fetch_token(TOKEN_URL, client_secret=CLIENT_SECRET, code=code)
     user_info = google.get("https://www.googleapis.com/oauth2/v2/userinfo").json()
     email = user_info["email"]
     is_admin = email.lower() in admin_emails or email.lower() in gadmin_emails or ALL_ADMINS
@@ -330,6 +339,26 @@ def callback(response: Response, request: Request):
         return response
     return RedirectResponse(url="/loginrejected")
 
+@app.get("/logout")
+def logout(response: Response, request: Request):
+    """
+    Clears the authentication cookie
+    """
+    session_id = request.cookies.get("session_id")
+    if session_id and session_id in sessions:
+        sessions.pop(session_id)
+
+    response.delete_cookie(
+        key="session_id",
+        path="/",
+        domain=None,
+        httponly=True,
+        samesite="lax",
+        secure=False
+    )
+
+    return Response(status_code=status.HTTP_302_FOUND, headers={"Location": "/login"})
+
 @app.get("/loginrejected", response_class=HTMLResponse)
 def login_rejected(request: Request):
     return frontend.TemplateResponse("loginrejected.html", {"request": request})
@@ -337,6 +366,10 @@ def login_rejected(request: Request):
 @app.get("/adminpanel", response_class=HTMLResponse)
 def admin_panel(request: Request, session_id: str = Cookie(None)):
     if not session_id or session_id not in sessions or not sessions[session_id].get("admin"):
+        return RedirectResponse(url="/")
+
+    email = get_session_email(session_id)
+    if not email:
         return RedirectResponse(url="/login")
 
     if not SECRETS_PATH.exists():
@@ -357,10 +390,24 @@ def admin_panel(request: Request, session_id: str = Cookie(None)):
             "logs": logs,
             "admins": admins,
             "gadmins": gadmins,
-            "categories": CATEGORIES
+            "categories": CATEGORIES,
+            "email": email,
         }
     )
 
+@app.get("/enableemailcheck", response_class=HTMLResponse)
+def enable_email_check(request: Request, session_id: str = Cookie(None)):
+    global EMAIL_CHECK
+    if not session_id or session_id not in sessions or not sessions[session_id].get("admin"):
+        return RedirectResponse(url="/")
+
+    email = get_session_email(session_id)
+    if not email:
+        return RedirectResponse(url="/login")
+
+    EMAIL_CHECK = not EMAIL_CHECK
+    print('Email Checking is now', EMAIL_CHECK)
+    return RedirectResponse(url="/")
 
 @app.get("/adminpanel/getbook")
 def get_book(request: Request, id: int, session_id: str = Cookie(None)):

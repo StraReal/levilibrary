@@ -22,8 +22,11 @@ header {
 }
 
 .header-rectangle {
+  position: absolute;
   width: 25vw;
   height: 5.1vh;
+  right: 1vw;
+  top: 7.5vh;
   background-color: #70ade0;
   border-radius: 1vh;
   border: 2px solid #efebd0;
@@ -64,6 +67,79 @@ header {
 
 header .logo {
   height: 12vh;
+}
+
+header .login-rect {
+  display: flex;
+  padding: 1vh 0vw 1vh 0vw;
+  height: 4vh;
+  align-items: center;
+  min-width: 4vh;
+  max-width: 100%;
+  margin-bottom: auto;
+  margin-top: 2.5vh;
+  margin-left: auto;
+  border-radius: 4vh;
+  background-color: #22465b;
+  white-space: nowrap;
+  font-size: 0vw;
+  transition: background-color 0.3s ease;
+  transition: font-size 0.5s;
+}
+
+header .login-rect:hover {
+  background-color: #6197b7;
+  font-size: 1vw;
+  padding: 1vh 0.5vw 1vh 0.5vw;
+}
+
+header p {
+  margin: 0;
+  color: #dbfcf9;
+  font-family: 'Iceland', cursive;
+  line-height: 1;
+}
+
+header .login-rect-image {
+  height: 4vh;
+  width: 4vh;
+  transform: scale(1.1);
+  opacity: 1;
+  filter: invert(1) brightness(1);
+  margin-left: 0vw
+}
+
+header .login-rect:hover .login-rect-image {
+  opacity: 0.6;
+  width: 0vh;
+}
+
+header .logout-rect {
+  display: flex;
+  height: 4vh;
+  width: 4vh;
+  margin-bottom: auto;
+  margin-top: 2.5vh;
+  margin-left: 0.5vw;
+  border-radius: 4vh;
+  background-color: #22465b;
+  transition: background-color 0.3s ease;
+  border: 2.5px solid #ffffff;
+  outline-offset: 2.5px;
+}
+
+header .logout-rect:hover {
+  background-color: #6197b7;
+}
+
+header .logout-rect-image {
+  height: 4vh;
+  width: 4vh;
+  padding-bottom:0.4vh;
+  opacity: 0.9;
+  filter: invert(1);
+  transform: scale(0.65);
+  transition: filter 0.3s;
 }
 
 main {
