@@ -51,8 +51,10 @@ document.getElementById("addBookForm").onsubmit = async (e) => {
 
   const payload = new FormData();
   payload.append("title", formData.get("title"));
-  payload.append("author", formData.get("author"));
+  payload.append("authorn", formData.get("authorn"));
+  payload.append("authors", formData.get("authors"));
   payload.append("section", formData.get("section"));
+  payload.append("position", formData.get("position"));
   payload.append("category", formData.get("category"));
 
   if (coverInput.files.length > 0) {
@@ -116,7 +118,7 @@ rmBookForm.addEventListener("submit", async (e) => {
     const book = await res.json();
 
     document.getElementById("rmBookTitle").textContent = book.title;
-    document.getElementById("rmBookAuthor").textContent = book.author;
+    document.getElementById("rmBookAuthor").textContent = book.authorn + " " + book.authors;
     document.getElementById("rmBookCover").src = book.cover;
 
     document.getElementById("confirmRmBook").classList.remove("disabled");
@@ -238,22 +240,46 @@ editBookForm.addEventListener("submit", async (e) => {
     const book = await res.json();
 
     document.getElementById("editBookTitle").value = book.title ?? "";
-    document.getElementById("editBookAuthor").value = book.author ?? "";
+    document.getElementById("editAuthorInputN").value = book.authorn ?? "";
+    document.getElementById("editAuthorInputS").value = book.authors ?? "";
     document.getElementById("editBookSection").value = book.section ?? "";
+    document.getElementById("editBookPosition").value = book.position ?? "";
     document.getElementById("editBookCategory").value = book.category ?? "";
     console.log(book.section, book.category)
+
+const inputIds = [
+  "editBookTitle",
+  "editAuthorInputN",
+  "editAuthorInputS",
+  "editBookSection",
+  "editBookCategory",
+  "editBookPosition"
+];
+
+function updateConfirmButtonState() {
+  const allFilled = inputIds.every(id => {
+    const el = document.getElementById(id);
+    return el && el.value.trim() !== "";
+  });
+
+  confirmEditBtn.classList.toggle("disabled", !allFilled);
+  confirmEditBtn.disabled = !allFilled;
+}
+
+inputIds.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener("input", updateConfirmButtonState);
+});
+
+document.getElementById("editBookId").addEventListener("input", updateConfirmButtonState);
+
+updateConfirmButtonState();
 
 existingCoverPath = book.cover || null;
 editCoverPreview.src = existingCoverPath || "static/assets/placeholder_cover.png";
 
-    confirmEditBtn.classList.remove("disabled");
-
-    ["editBookTitle", "editBookAuthor", "editBookSection", "editBookCategory"]
-  .forEach(id => document.getElementById(id).required = true);
-
   } catch (err) {
     alert(err.message);
-    confirmEditBtn.classList.add("disabled");
   }
 });
 
@@ -263,11 +289,13 @@ confirmEditBtn.addEventListener("click", async () => {
   try {
     const id = document.getElementById("editBookId").value.trim();
     const title = document.getElementById("editBookTitle").value.trim();
-    const author = document.getElementById("editBookAuthor").value.trim();
+    const authorn = document.getElementById("editAuthorInputN").value.trim();
+    const authors = document.getElementById("editAuthorInputS").value.trim();
     const section = document.getElementById("editBookSection").value.trim();
+    const position = document.getElementById("editBookPosition").value.trim();
     const category = document.getElementById("editBookCategory").value;
 
-    if (!id || !title || !author || !section || !category) {
+    if (!id || !title || !authorn || !authors || !section || !position || !category) {
       alert("Compila tutti i campi prima di confermare");
       return;
     }
@@ -275,8 +303,10 @@ confirmEditBtn.addEventListener("click", async () => {
     const formData = new FormData();
     formData.append("id", id);
     formData.append("title", title);
-    formData.append("author", author);
+    formData.append("authorn", authorn);
+    formData.append("authors", authors);
     formData.append("section", section);
+    formData.append("position", position);
     formData.append("category", category);
 
     if (editCoverInput.files.length > 0) {
@@ -298,17 +328,11 @@ confirmEditBtn.addEventListener("click", async () => {
     alert("Libro modificato correttamente");
     editBookModal.style.display = "none";
     editBookForm.reset();
-    confirmEditBtn.classList.add("disabled");
     location.reload();
 
   } catch (err) {
     alert(err.message);
   }
-});
-
-
-document.getElementById("editBookId").addEventListener("input", () => {
-  confirmEditBtn.classList.add("disabled");
 });
 
 //======//
@@ -324,12 +348,16 @@ function addLog(text) {
 
   logList.parentElement.scrollTop = logList.parentElement.scrollHeight;
 }
-document.addEventListener("DOMContentLoaded", () => {
-  const logContainer = document.getElementById("logContainer");
+document.addEventListener('DOMContentLoaded', () => {
+  const logContainer = document.getElementById('logContainer');
   if (logContainer) {
     logContainer.scrollTop = logContainer.scrollHeight;
   }
+
+  loadAdmins();
+  attachRemoveHandlers();
 });
+
 const edAdmBookModal = document.getElementById("edAdmBookModal");
 const openEdAdmModal = document.getElementById("openEdAdmModal");
 const closeEdAdmBookModal = document.getElementById("closeEdAdmBookModal");
@@ -337,10 +365,7 @@ const adminListContainer = document.getElementById("adminListContainer");
 const edAdmBookForm = document.getElementById("edAdmBookForm");
 const newAdminInput = document.getElementById("newAdminInput");
 
-let admins = Array.from(
-  adminListContainer.querySelectorAll(".admin-input")
-).map(input => input.value);
-attachRemoveHandlers();
+let admins = [];
 
 async function removeAdmin(email) {
   if (admins.length <= 1) {
@@ -360,7 +385,7 @@ async function removeAdmin(email) {
 
     if (!res.ok) throw new Error("Failed to remove admin");
 
-    window.location.reload();
+    window.location.reload(true);
   } catch (err) {
     alert(err.message);
   }
@@ -383,7 +408,7 @@ edAdmBookForm.addEventListener("submit", async (e) => {
 
     if (!res.ok) throw new Error("Failed to add admin");
 
-    window.location.reload();
+    window.location.reload(true);
   } catch (err) {
     alert(err.message);
   }
@@ -407,16 +432,25 @@ window.addEventListener("click", (e) => {
   }
 });
 
+function loadAdmins() {
+  admins = Array.from(
+    adminListContainer.querySelectorAll('.admin-input, .golden-admin-input')
+  ).map(i => i.value);
+}
+
 function attachRemoveHandlers() {
-  const removeBtns = adminListContainer.querySelectorAll(".remove-admin-btn");
-  removeBtns.forEach((btn, idx) => {
-    const email = admins[idx];
-    btn.onclick = () => removeAdmin(email);
+  const removeBtns = adminListContainer.querySelectorAll('.remove-admin-btn');
+  removeBtns.forEach(btn => btn.replaceWith(btn.cloneNode(true)));
+  const freshBtns = adminListContainer.querySelectorAll('.remove-admin-btn');
+
+  freshBtns.forEach((btn, idx) => {
+    const email = admins[idx+1];
+    btn.addEventListener('click', () => removeAdmin(email));
   });
 }
 
 function clearAdminInputs() {
-  newAdminInput.value = "";
+  newAdminInput.value = '';
 
   adminListContainer.querySelectorAll(".admin-input").forEach(input => {
     input.value = input.value;

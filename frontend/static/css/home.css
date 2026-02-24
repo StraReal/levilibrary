@@ -150,6 +150,32 @@
   z-index: 0;
 }
 
+.modal-info-description h2 {
+  position: relative;
+  height: 2vh;
+  margin-top: 0.6vh;
+  color: white;
+  border-radius: 10px;
+  z-index: 1;
+  font-size: clamp(1.2vh, 1.8vh, 2vh);
+  top: 0.2vh;
+  left: 0.4vw;
+  white-space: nowrap;
+}
+
+.modal-info-description p {
+  position: relative;
+  height: 2vh;
+  margin-top: 0.6vh;
+  color: white;
+  border-radius: 10px;
+  z-index: 1;
+  font-size: clamp(1.2vh, 1.8vh, 2vh);
+  top: 0.2vh;
+  left: 0.4vw;
+  white-space: nowrap;
+}
+
 .modal-info-title h2 {
   position: relative;
   height: 1.5vh;
@@ -171,20 +197,6 @@
   font-size: clamp(1.2vh, 1.8vh, 2vh);
   top: 0.4vh;
   left: 0.4vh;
-  white-space: nowrap;
-}
-
-
-.modal-info-description p {
-  position: relative;
-  height: 2vh;
-  margin-top: 0.6vh;
-  color: white;
-  border-radius: 10px;
-  z-index: 1;
-  font-size: clamp(1.2vh, 1.8vh, 2vh);
-  top: 0.2vh;
-  left: 0.4vw;
   white-space: nowrap;
 }
 

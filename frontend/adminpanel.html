@@ -44,13 +44,25 @@
   <label for="titleInput">Titolo</label>
   <input type="text" id="titleInput" name="title" placeholder="Titolo" required>
 
-  <label for="authorInput">Autore</label>
-  <input type="text" id="authorInput" name="author" placeholder="Autore" required>
+    <div class="form-row">
+  <div class="form-group">
+  <label for="authorInputN">Nome</label>
+  <input type="text" id="authorInputN" name="authorn" placeholder="Nome" required>
+      </div>
+      <div class="form-group">
+          <label for="authorInputS">Cognome</label>
+  <input type="text" id="authorInputS" name="authors" placeholder="Cognome" required>
+          </div></div>
 
 <div class="form-row">
   <div class="form-group">
-    <label for="positionInput">Scaffale</label>
-    <input type="text" id="positionInput" name="section" placeholder="Scaffale" required>
+    <label for="sectionInput">Scaffale</label>
+    <input type="text" id="sectionInput" name="section" placeholder="Scaffale" required>
+  </div>
+
+  <div class="form-group">
+    <label for="positionInput">Posizione</label>
+    <input type="text" id="positionInput" name="position" placeholder="Posizione" required>
   </div>
 
   <div class="form-group">
@@ -117,8 +129,15 @@
         <label for="editBookTitle">Titolo</label>
         <input type="text" id="editBookTitle" name="title" placeholder="Titolo del libro" />
 
-        <label for="editBookAuthor">Autore</label>
-        <input type="text" id="editBookAuthor" name="author" placeholder="Autore del libro" />
+<div class="form-row">
+  <div class="form-group">
+  <label for="editAuthorInputN">Nome</label>
+  <input type="text" id="editAuthorInputN" name="author" placeholder="Nome">
+      </div>
+      <div class="form-group">
+          <label for="editAuthorInputS">Cognome</label>
+  <input type="text" id="editAuthorInputS" name="author" placeholder="Cognome">
+          </div></div>
 
 <div class="form-row">
   <div class="form-group">
@@ -187,7 +206,6 @@
     <h2>Lista Admin</h2>
 <div id="adminListContainer">
     <script>
-  console.log("Admins:", {{ admins|tojson }});
 </script>
     {% for gadmin in gadmins %}
     <div class="admin-tag">

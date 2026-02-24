@@ -16,11 +16,13 @@ class Book(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
-    author = Column(String, nullable=False)
+    authorn = Column(String, nullable=False)
+    authors = Column(String, nullable=False)
     cover = Column(String, nullable=False)
     lent = Column(Integer, nullable=True)
     category = Column(String, nullable=False)
     section = Column(Integer, nullable=True) # Scaffale
+    position = Column(Integer, nullable=True)
 
 class AdminLog(Base):
     __tablename__ = "admin_logs"

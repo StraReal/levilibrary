@@ -18,11 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
       isBorrowed = book.dataset.borrowed === "True";
       isMine = book.dataset.mine === "True";
 
-      document.getElementById("modal-title").textContent = book.dataset.title;
-      document.getElementById("modal-author").textContent = book.dataset.author;
-      document.getElementById("modal-section").textContent = 'Scaffale: ' + book.dataset.section;
-      document.getElementById("modal-category").textContent = book.dataset.category + ' (' + book.dataset.shortcat + ')';
-      document.getElementById("modal-cover").src = book.dataset.cover;
+document.getElementById("modal-title").textContent = book.dataset.title;
+document.getElementById("modal-author").textContent = book.dataset.authorn + " " + book.dataset.authors;
+document.getElementById("modal-section").textContent = 'Scaffale ' + book.dataset.section + ', posizione ' + book.dataset.position;
+document.getElementById("modal-category").textContent = book.dataset.category + ' (' + book.dataset.shortcat + ')';
+document.getElementById("modal-cover").src = book.dataset.cover;
+
+let surnameInitial = book.dataset.authors ? book.dataset.authors[0].toUpperCase() : '';
+document.getElementById("modal-scode").textContent = "Codice: " + book.dataset.section + surnameInitial + book.dataset.shortcat + book.dataset.position;
 
       modalContent.style.backgroundColor = invertedLuminosity(book.dataset.avgColor);
       modalOverlay.style.display = "flex";

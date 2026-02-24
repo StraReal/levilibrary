@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from sqlalchemy import create_engine, inspect, Column
+from sqlalchemy import create_engine, inspect, Column, text
 from sqlalchemy.orm import sessionmaker
 from models import Base, User, Book, AdminLog
 
@@ -13,8 +13,6 @@ engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine)
 
 Base.metadata.create_all(bind=engine)  # creates missing tables, not columns
-
-from sqlalchemy import inspect, text
 
 def add_missing_columns(table_cls):
     inspector = inspect(engine)
@@ -35,11 +33,39 @@ def add_missing_columns(table_cls):
                 else:
                     col_type = "TEXT"
 
-                nullable = "" if col.nullable else "NOT NULL"
+                # Make the column nullable for SQLite; we’ll populate it later
+                nullable = ""  # remove NOT NULL here
                 default = f" DEFAULT {col.default.arg}" if col.default is not None else ""
                 sql = f'ALTER TABLE {table_name} ADD COLUMN {col.name} {col_type} {nullable}{default}'.strip()
                 print(f"Adding column: {sql}")
                 conn.execute(text(sql))
+
+def migrate_authors():
+    with engine.begin() as conn:
+        inspector = inspect(engine)
+        table_name = Book.__tablename__
+        columns = [c['name'] for c in inspector.get_columns(table_name)]
+
+        # Add authorn and authors if missing
+        if "authorn" not in columns:
+            conn.execute(text(f"ALTER TABLE {table_name} ADD COLUMN authorn TEXT"))
+        if "authors" not in columns:
+            conn.execute(text(f"ALTER TABLE {table_name} ADD COLUMN authors TEXT"))
+
+        # Populate authorn/authors from old author column
+        books = conn.execute(text(f"SELECT id, author FROM {table_name}")).fetchall()
+        for book_id, author_full in books:
+            if author_full:
+                parts = author_full.split()
+                authorn = parts[0]
+                authors = " ".join(parts[1:]) if len(parts) > 1 else ""
+                conn.execute(
+                    text(f"UPDATE {table_name} SET authorn = :authorn, authors = :authors WHERE id = :id"),
+                    {"authorn": authorn, "authors": authors, "id": book_id}
+                )
+
+        if "author" in columns:
+            print("WARNING: SQLite cannot drop the 'author' column automatically. Drop manually or recreate the table.")
 
 def print_db(db, table: int = 0, message: str = ''):
     if message:
@@ -71,7 +97,7 @@ def print_db(db, table: int = 0, message: str = ''):
         if table==User:
             print(f"{e.id} | {e.email} | {e.borrowing}")
         elif table==Book:
-            print(f"{e.id} | {e.title} | {e.author} | {e.category} | {e.section} | {e.cover} | {e.lent}")
+            print(f"{e.id} | {e.title} | {e.authorn} {e.authors} | {e.category} | {e.section} | {e.cover} | {e.lent}")
         elif table==AdminLog:
             print(f"{e.id} | {e.user_email} | {e.action} | {e.book_id} | {e.book_title} | {e.subject} | {e.timestamp}")
 
@@ -79,6 +105,9 @@ def main():
     db = SessionLocal()
     for table_cls in [User, Book, AdminLog]:
         add_missing_columns(table_cls)
+
+    # Migrate old author column
+    migrate_authors()
 
     print_db(db, 0, message="\n=== USERS DB ===")
     print_db(db, 1, message="\n=== BOOKS DB ===")

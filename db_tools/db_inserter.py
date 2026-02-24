@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, User, Book, AdminLog
 from datetime import datetime, timezone
-from typing import Literal
+
 PLACEHOLDER_COVER = Path("frontend/static/assets/placeholder_cover.png")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,18 +43,20 @@ def update_admin(
         secrets = json.load(f)
 
     admins = set(e.lower() for e in secrets.get("admin_emails", []))
+    gadmins = set(e.lower() for e in secrets.get("gadmin_emails", []))
 
-    if email not in admins:
+
+    if email not in admins and email not in gadmins:
         return False
 
     if action == 0:
-        if subject in admins:
+        if subject in (admins, gadmins):
             return False
         admins.add(subject)
         log_action(db, user_email=email, subject=subject, action=6)
 
     elif action == 1:
-        if subject not in admins:
+        if subject not in admins and subject not in gadmins:
             return False
         if len(admins) <= 2:
             raise RuntimeError("Refusing to remove last admin")
@@ -72,7 +74,7 @@ def update_admin(
     tmp_path.replace(SECRETS_PATH)
     return True
 
-def add_entry(db, entry, user_table=True, author=None, cover=None, category='Unmarked', section=None):
+def add_entry(db, entry, user_table=True, authorn=None, authors=None, cover=None, category='Unmarked', section=None, position=None):
     entry=entry.strip()
     if not entry: return
     if user_table:
@@ -93,7 +95,7 @@ def add_entry(db, entry, user_table=True, author=None, cover=None, category='Unm
         new_entry = User(email=entry, borrowing=None)
         log_action(db, entry, 5)
     else:
-        new_entry = Book(title=entry, author=author, cover=cover, lent=None, category=category, section=section)
+        new_entry = Book(title=entry, authorn=authorn, authors=authors, cover=cover, lent=None, category=category, section=section, position=position)
 
     db.add(new_entry)
     db.commit()
@@ -139,7 +141,7 @@ def remove_entry(db, entry_id, user_table=True):
     db.commit()
     print(f"\nEntry removed successfully from {table_name} with ID: {entry_id}")
 
-def edit_entry(db, id, title=None, author=None, cover=None, category=None, section=None):
+def edit_entry(db, id, title=None, authorn=None, authors=None, cover=None, category=None, section=None, position=None):
     obj = db.query(Book).filter(Book.id == id).first()
     if not obj:
         print(f"\nEntry not found in Book with ID: {id}")
@@ -154,14 +156,15 @@ def edit_entry(db, id, title=None, author=None, cover=None, category=None, secti
                 print(f"Failed to delete old cover: {e}")
 
     obj.title = title if title is not None else obj.title
-    obj.author = author if author is not None else obj.author
+    obj.authorn = authorn if authorn is not None else obj.authorn
+    obj.authors = authors if authors is not None else obj.authors
     obj.cover = cover if cover is not None else obj.cover
     obj.category = category if category not in (None, "Unmarked") else obj.category
     obj.section = section if section is not None else obj.section
+    obj.position = position if position is not None else obj.position
 
     db.commit()
     print(f"\nEntry edited successfully in Book with ID: {id}")
-
 
 def log_action(db, user_email: str | None, action: int = 0, subject=None, book=None):
     if action not in LOG_ACTIONS or not LOG_ACTIONS[action]:
@@ -219,7 +222,6 @@ def log_action(db, user_email: str | None, action: int = 0, subject=None, book=N
             f"at <{now_utc.isoformat()}> logged."
         )
 
-
 def main():
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
     SessionLocal = sessionmaker(bind=engine)
@@ -236,10 +238,10 @@ def main():
 
     read_db(db, user_db,"\n=== BEFORE adding ===")
     entry = input("Enter item: ")
-    author = None
+    authorn = None
     if not user_db:
-        author = input("Enter author: ")
-    add_entry(db, entry, user_table=user_db, author=author, cover=None)
+        authorn = input("Enter author: ")
+    add_entry(db, entry, user_table=user_db, authorn=authorn, cover=None)
     read_db(db, user_db,"\n=== AFTER adding ===")
     db.close()
 

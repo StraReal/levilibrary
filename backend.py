@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 from requests_oauthlib import OAuth2Session
 from fastapi.staticfiles import StaticFiles
 
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 
 from pathlib import Path
 import os, uuid, shutil, time, json
@@ -17,6 +17,8 @@ import db_tools.db_reader as dbr
 import db_tools.db_inserter as dbi
 from database import engine, SessionLocal
 from models import Base, User, Book, AdminLog
+from typing import Tuple
+
 
 # -------------------- SETUP --------------------
 Base.metadata.create_all(bind=engine)
@@ -176,7 +178,7 @@ def homepage(
             or_(
                 Book.id.ilike(f"%{q}%"),
                 Book.title.ilike(f"%{q}%"),
-                Book.author.ilike(f"%{q}%")
+                func.concat(Book.authorn, " ", Book.authors).ilike(f"%{q}%")
             )
         )
 
@@ -250,7 +252,8 @@ def returnbook_page(request: Request, session_id: str = Cookie(None)):
         class PlaceholderBook:
             id = None
             title = "Book Title"
-            author = "Book Author"
+            authorn = "Author Name"
+            authors = "Surname"
             cover = "static/assets/placeholder_cover.png"
             avg_color = "rgb(44, 44, 44)"
 
@@ -374,7 +377,8 @@ def get_book(request: Request, id: int, session_id: str = Cookie(None)):
     return JSONResponse({
         "id": book.id,
         "title": book.title,
-        "author": book.author,
+        "authorn": book.authorn,
+        "authors": book.authors,
         "cover": book.cover,
         "section": book.section,
         "category": book.category,
@@ -384,8 +388,10 @@ def get_book(request: Request, id: int, session_id: str = Cookie(None)):
 async def add_book(
     request: Request,
     title: str = Form(...),
-    author: str = Form(...),
+    authorn: str = Form(...),
+    authors: str = Form(...),
     section: int = Form(...),
+    position: int = Form(...),
     category: str = Form(...),
     cover: UploadFile | None = File(None),
 ):
@@ -398,9 +404,9 @@ async def add_book(
 
     db = SessionLocal()
     cover_path = await save_cover(cover)
-    dbi.add_entry(db, title, user_table=False, author=author, cover=cover_path, category=category, section=section)
+    dbi.add_entry(db, title, user_table=False, authorn=authorn, authors=authors, cover=cover_path, category=category, section=section, position=position)
 
-    new_book = db.query(Book).filter(Book.title == title, Book.author == author).order_by(Book.id.desc()).first()
+    new_book = db.query(Book).filter(Book.title == title, Book.authorn == authorn, Book.authors == authors).order_by(Book.id.desc()).first()
 
     dbi.log_action(db, user_email=email, action=1, book=new_book)
 
@@ -413,8 +419,10 @@ async def edit_book(
     request: Request,
     id: int = Form(...),
     title: str = Form(...),
-    author: str = Form(...),
+    authorn: str = Form(...),
+    authors: str = Form(...),
     section: int = Form(...),
+    position: int = Form(...),
     category: str = Form(...),
     cover: UploadFile | None = File(None),
 ):
@@ -428,9 +436,9 @@ async def edit_book(
     db = SessionLocal()
     cover_path = await save_cover(cover, False)
 
-    dbi.edit_entry(db, id, title, author=author, cover=cover_path, category=category, section=section)
+    dbi.edit_entry(db, id, title, authorn=authorn, authors=authors, cover=cover_path, category=category, section=section, position=position)
 
-    new_book = db.query(Book).filter(Book.title == title, Book.author == author).order_by(Book.id.desc()).first()
+    new_book = db.query(Book).filter(Book.title == title, Book.authorn == authorn, Book.authors == authors).order_by(Book.id.desc()).first()
 
     dbi.log_action(db, user_email=email, action=8, book=new_book)
 

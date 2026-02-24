@@ -81,12 +81,14 @@
      data-id="{{ book.id }}"
      data-avg-color="{{ book.avg_color }}"
      data-title="{{ book.title }}"
-     data-author="{{ book.author }}"
+     data-authorn="{{ book.authorn }}"
+     data-authors="{{ book.authors }}"
      data-cover="{{ book.cover }}"
      data-description="{{ book.description }}"
      data-borrowed="{{ book.is_borrowed }}"
      data-mine="{{ book.is_mine }}"
      data-section="{{ book.section }}"
+     data-position="{{ book.position }}"
      data-category="{{ book.category }}"
      data-shortcat="{{ book.shortcat }}"
      style="border: 5px solid {{ book.avg_color }};
@@ -95,7 +97,7 @@
   <div class="book-text">
     <div class="book-text-bg">
       <div class="book-title">{{ book.title }}</div>
-      <div class="book-author">{{ book.author }}</div>
+      <div class="book-author">{{ book.authorn }} {{ book.authors }}</div>
     </div>
   </div>
 </div>
@@ -162,6 +164,7 @@
       <p id="modal-author"></p>
     </div>
     <div class="modal-info-description">
+      <h2 id="modal-scode"></h2>
       <p id="modal-section"></p>
       <p id="modal-category"></p>
     </div>
@@ -172,7 +175,7 @@
 
   <script>
 const pageInput = document.querySelector('.page-circle-input');
-const currentPage = {{ page }};  // rendered as a number
+const currentPage = {{ page }};
 pageInput.addEventListener('blur', () => {
   pageInput.value = currentPage;
 });</script>
