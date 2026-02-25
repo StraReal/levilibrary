@@ -83,6 +83,8 @@ header .login-rect {
   background-color: #22465b;
   white-space: nowrap;
   font-size: 0vw;
+  border: 0 solid #ffffff;
+  outline-offset: 0;
   transition: background-color 0.3s ease;
   transition: font-size 0.5s;
 }
@@ -91,6 +93,8 @@ header .login-rect:hover {
   background-color: #6197b7;
   font-size: 1vw;
   padding: 1vh 0.5vw 1vh 0.5vw;
+    border: 2.5px solid #ffffff;
+  outline-offset: 2.5px;
 }
 
 header p {
@@ -103,7 +107,6 @@ header p {
 header .login-rect-image {
   height: 4vh;
   width: 4vh;
-  transform: scale(1.1);
   opacity: 1;
   filter: invert(1) brightness(1);
   margin-left: 0vw
