@@ -251,7 +251,7 @@
   background: #888888;
   font-family: "Alexandria";
   color: #EFEFEF;
-  cursor: pointer;
+  cursor: not-allowed;
   bottom: 2vh;
   height: 4vh;
   right: 2vh;
